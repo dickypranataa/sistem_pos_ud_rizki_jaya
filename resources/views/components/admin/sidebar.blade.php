@@ -12,6 +12,14 @@
             Dashboard
         </a>
 
+        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4 mb-1 pl-4">User</div>
+
+        <a href="{{ route('admin.user.index') }}" 
+           class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-150 text-gray-700 hover:bg-gray-100">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            Data User
+        </a>
+
         <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4 mb-1 pl-4">Master Data</div>
 
         
