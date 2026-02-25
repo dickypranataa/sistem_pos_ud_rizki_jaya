@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PembayaranController;
+
 //kasir
 use App\Http\Controllers\Kasir\KasirController;
 
@@ -19,6 +21,7 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
     Route::resource('produk', ProdukController::class);
     Route::resource('kategori', KategoriController::class);
     Route::resource('user', UserController::class);
+    Route::resource('pembayaran', PembayaranController::class);
 });
 
 Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function () {
