@@ -23,7 +23,8 @@ class TransaksiSeeder extends Seeder
         
         //ambil data produk
         $produks = Produk::all();
-        $userIds = User::pluck('id')->toArray();
+        //user hanya role kasir saja
+        $userIds = User::where('role', 'kasir')->pluck('id')->toArray();
         $pembayaranIds = Pembayaran::pluck('id')->toArray();
 
         $pembayaranIds = [1,2,3];
@@ -44,7 +45,7 @@ class TransaksiSeeder extends Seeder
                 //membuat tanggal transaksi acak 2 tahun sampai sekarang
                 $waktu = $faker->dateTimeBetween('-2 year', 'now');
                 //menambil tipe harga secara acak
-                $tipe_harga = $faker->randomElement(['retail', 'semi_grosir', 'grosir']);
+                $tipe_harga = $faker->randomElement(['Retail', 'Semi Grosir', 'Grosir']);
 
                 $transaksi = Transaksi::create([
                     'kode_transaksi'  => 'TRX-' . $waktu->format('Ymd') . '-' . str_pad($i, 5, '0', STR_PAD_LEFT),

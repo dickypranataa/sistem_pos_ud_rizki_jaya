@@ -21,7 +21,7 @@ class DetailTransaksi extends Model
         return $this->belongsTo(Transaksi::class);
     }
 
-    //1 detail transaksi terhubung dengan 1 produk
+    //1 detail transaksi terhubung dengan produk
     public function produk()
     {
         return $this->belongsTo(Produk::class);

@@ -11,6 +11,7 @@ class Transaksi extends Model
     use HasFactory;
     protected $guarded = ['id'];
     protected $fillable =[
+        'kode_transaksi',
         'user_id',
         'pembayaran_id',
         'tipe_harga',
