@@ -24,6 +24,8 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
     Route::resource('user', UserController::class);
     Route::resource('pembayaran', PembayaranController::class);
     Route::resource('transaksi', TransaksiController::class);
+    //struk
+    Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetakStruk'])->name('transaksi.cetak');
 });
 
 Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function () {

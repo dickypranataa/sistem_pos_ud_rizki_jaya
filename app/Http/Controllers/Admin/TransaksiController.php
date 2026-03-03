@@ -29,7 +29,14 @@ class TransaksiController extends Controller
     public function show($id){
         $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran'])->findOrFail($id);
         
+        
         return view('admin.transaksi.show', compact('transaksi'));
+    }
+
+    public function cetakStruk($id){
+        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran'])->findOrFail($id);
+
+        return view('admin.transaksi.cetak', compact('transaksi'));
     }
 
 
