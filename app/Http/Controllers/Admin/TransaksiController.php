@@ -17,17 +17,19 @@ class TransaksiController extends Controller
     //
     public function index(){
         $search = request('search');
-        $transaksi = Transaksi::query()->when($search, function ($query) use ($search) {
-            $query->where('kode_transaksi', 'like', "%{$search}%");})
+        $transaksi = Transaksi::with(['user', 'pembayaran'])
+                  ->when($search, function ($query) use ($search) {
+                      $query->where('kode_transaksi', 'like', "%{$search}%");
+                  })
                   ->latest()
                   ->paginate(10);
         return view('admin.transaksi.index', compact('transaksi'));
     }
 
     public function show($id){
-        $transaksi = Transaksi::find($id);
-        $detail = DetailTransaksi::where('transaksi_id', $id)->get();
-        return view('admin.transaksi.show', compact('transaksi', 'detail'));
+        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran'])->findOrFail($id);
+        
+        return view('admin.transaksi.show', compact('transaksi'));
     }
 
 

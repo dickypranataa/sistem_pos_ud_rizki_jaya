@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<h2 class="text-2xl font-bold mb-4 text-gray-800">RiwayatTransaksi</h2>
+<h2 class="text-2xl font-bold mb-4 text-gray-800">Riwayat Transaksi</h2>
 
 <!-- Search -->
 <div class="mb-4">
