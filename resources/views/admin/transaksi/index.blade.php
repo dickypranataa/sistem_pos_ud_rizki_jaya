@@ -5,24 +5,26 @@
 
 <!-- Search -->
 <div class="mb-4">
-    <form action="{{ route('admin.transaksi.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
+    <form action="{{ route('admin.transaksi.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 items-center">
         
-        <input type="text" 
-               name="search" 
-               id="search" 
-               value="{{ request('search') }}"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-               placeholder="Cari detail transaksi...">
+        <label for="filter_bulan" class="font-medium text-gray-700 whitespace-nowrap">Periode:</label>
+        
+        <input type="month" 
+               name="filter_bulan" 
+               id="filter_bulan" 
+               value="{{ request('filter_bulan') }}"
+               class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition">
-            Cari
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition font-medium">
+            Tampilkan
         </button>
         
-        @if(request('search'))
-            <a href="{{ route('admin.transaksi.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg text-center transition">
-                Reset
+        @if(request('filter_bulan'))
+            <a href="{{ route('admin.transaksi.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg text-center transition font-medium">
+                Reset Filter
             </a>
         @endif
+        
     </form>
 </div>
 

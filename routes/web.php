@@ -26,6 +26,13 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
     Route::resource('transaksi', TransaksiController::class);
     //struk
     Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetakStruk'])->name('transaksi.cetak');
+
+    //notifikasi
+    Route::get('/notifikasi/read-all', function () {
+        // Menandai semua notifikasi milik admin yang sedang login menjadi "sudah dibaca"
+        request()->user()->unreadNotifications->markAsRead();
+        return redirect()->back();
+    })->name('notifikasi.readAll');
 });
 
 Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function () {

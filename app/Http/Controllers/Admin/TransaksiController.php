@@ -15,16 +15,26 @@ use Faker\Factory as Faker;
 class TransaksiController extends Controller
 {
     //
-    public function index(){
-        $search = request('search');
-        $transaksi = Transaksi::with(['user', 'pembayaran'])
-                  ->when($search, function ($query) use ($search) {
-                      $query->where('kode_transaksi', 'like', "%{$search}%");
-                  })
-                  ->latest()
-                  ->paginate(10);
-        return view('admin.transaksi.index', compact('transaksi'));
-    }
+    public function index(Request $request){
+        //filter bulan
+
+        $filterBulan = $request->input('filter_bulan'); 
+
+    $transaksi = Transaksi::with(['user', 'pembayaran'])
+        ->when($filterBulan, function ($query) use ($filterBulan) {
+            $waktu = explode('-', $filterBulan);
+            
+            if (count($waktu) == 2) {
+                $query->whereYear('waktu_transaksi', $waktu[0])
+                      ->whereMonth('waktu_transaksi', $waktu[1]);
+            }
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('admin.transaksi.index', compact('transaksi'));
+}
 
     public function show($id){
         $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran'])->findOrFail($id);
