@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
 //admin
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProdukController;
@@ -13,7 +14,19 @@ use App\Http\Controllers\Admin\TransaksiController;
 //kasir
 use App\Http\Controllers\Kasir\KasirController;
 
+
 Route::get('/', function () {
+    // 1. Cek apakah user sudah login
+    if (auth()->check()) {
+        // 2. Jika sudah login, cek rolenya dan arahkan ke dashboard yang benar
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('kasir.dashboard');
+        }
+    }
+    
+    // 3. Jika belum login sama sekali, baru arahkan ke halaman login
     return redirect()->route('login');
 });
 
@@ -36,7 +49,13 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
 });
 
 Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function () {
-    //Route::get('/dashboard', [KasirController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [KasirController::class, 'index'])->name('dashboard');
+
+    //transaksi
+    Route::get('/transaksi', \App\Livewire\KasirTransaksi::class)->name('transaksi');
+
+    //cetak
+    Route::get('/transaksi/{id}/cetak', [KasirController::class, 'cetakStruk'])->name('transaksi.cetak');
 });
 
 Route::middleware('auth')->group(function () {

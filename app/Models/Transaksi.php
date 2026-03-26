@@ -18,6 +18,7 @@ class Transaksi extends Model
         'total_harga',
         'bayar',
         'kembalian',
+        'waktu_transaksi',
     ];
 
     //1 transaksi dibuat oleh 1 user
