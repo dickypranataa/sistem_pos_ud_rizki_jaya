@@ -27,7 +27,7 @@ class KasirTransaksi extends Component
     // Fungsi ini dijalankan setiap kali ada perubahan pada keranjang atau input bayar
     public function updated($property)
     {
-        if ($property === 'bayar' || $property === 'keranjang' || $property === 'tipe_harga') {
+        if ($property === 'bayar' || $property === 'tipe_harga' || str_starts_with($property, 'keranjang')) {
             $this->hitungTotal();
         }
     }
@@ -49,6 +49,7 @@ class KasirTransaksi extends Component
         if ($index !== false) {
             // Jika sudah ada, tambah jumlahnya (qty)
             $this->keranjang[$index]['qty']++;
+            
         } else {
             // Jika belum ada, masukkan sebagai barang baru
             $this->keranjang[] = [
@@ -132,12 +133,13 @@ class KasirTransaksi extends Component
             'user_id' => auth()->user()->id,
             'pembayaran_id'   => $this->pembayaran_id,
             'total_harga'     => $this->total_harga,
-            'bayar'           => $this->bayar,      // Pastikan nama kolom sesuai database Anda
-            'kembalian'       => $this->kembalian,  // Pastikan nama kolom sesuai database Anda
+            'bayar'           => $this->bayar,      
+            'kembalian'       => $this->kembalian,  
             'waktu_transaksi' => now(),
         ]);
+        
 
-        // 2. Simpan Detail Transaksi (Barang yang dibeli) & Kurangi Stok
+        // 2. Simpan Detail Transaksi & Catat Riwayat Stok
         foreach ($this->keranjang as $item) {
             \App\Models\DetailTransaksi::create([
                 'transaksi_id' => $transaksi->id,
@@ -147,10 +149,23 @@ class KasirTransaksi extends Component
                 'subtotal'     => $item['harga'] * $item['qty'],
             ]);
 
-            // Kurangi stok produk
+            // Ambil data produk
             $produk = Produk::find($item['produk_id']);
             if ($produk) {
+                $stokSebelumnya = $produk->stok;
+                
+                // Kurangi stok utama
                 $produk->decrement('stok', $item['qty']); 
+                
+                // CATAT KE TABEL RIWAYAT STOK
+                \App\Models\RiwayatStok::create([
+                    'produk_id'  => $produk->id,
+                    'user_id'    => auth()->user()->id, // Kasir yang bertugas
+                    'tipe'       => 'sale',
+                    'jumlah'     => -$item['qty'], // Minus karena barang keluar
+                    'stok_akhir' => $stokSebelumnya - $item['qty'],
+                    'keterangan' => 'Penjualan: ' . $kodeTransaksiOtomatis
+                ]);
             }
         }
 

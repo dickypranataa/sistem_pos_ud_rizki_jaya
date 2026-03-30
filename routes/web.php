@@ -10,23 +10,13 @@ use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PembayaranController;
 use App\Http\Controllers\Admin\TransaksiController;
+use App\Http\Controllers\Admin\RiwayatStokController;
 
 //kasir
 use App\Http\Controllers\Kasir\KasirController;
 
 
 Route::get('/', function () {
-    // 1. Cek apakah user sudah login
-    if (auth()->check()) {
-        // 2. Jika sudah login, cek rolenya dan arahkan ke dashboard yang benar
-        if (auth()->user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } else {
-            return redirect()->route('kasir.dashboard');
-        }
-    }
-    
-    // 3. Jika belum login sama sekali, baru arahkan ke halaman login
     return redirect()->route('login');
 });
 
@@ -37,6 +27,7 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
     Route::resource('user', UserController::class);
     Route::resource('pembayaran', PembayaranController::class);
     Route::resource('transaksi', TransaksiController::class);
+    Route::get('riwayat', [RiwayatStokController::class, 'index'])->name('riwayat.index');
     //struk
     Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetakStruk'])->name('transaksi.cetak');
 

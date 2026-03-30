@@ -50,7 +50,7 @@
                 <td class="px-6 py-4">{{ $transaksis->pembayaran->nama_pembayaran}}</td>
                 <td class="px-6 py-4 text-blue-500">{{ $transaksis->user->name}}</td>
                 <td class="px-6 py-4">{{ $transaksis->waktu_transaksi}}</td>
-                <td class="px-6 py-4">{{ $transaksis->tipe_harga }}</td>
+                <td class="px-6 py-4">{{ Str::headline($transaksis->tipe_harga) }}</td>
                 <td class="px-6 py-4">{{ 'Rp ' . number_format($transaksis->total_harga, 0, ',', '.')  }}</td>
                 <td class="px-6 py-4">{{ 'Rp ' . number_format($transaksis->bayar, 0, ',', '.')  }}</td>
                 <td class="px-6 py-4">{{ 'Rp ' . number_format($transaksis->kembalian, 0, ',', '.')  }}</td>

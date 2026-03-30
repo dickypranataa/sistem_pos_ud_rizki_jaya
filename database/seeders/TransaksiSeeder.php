@@ -51,7 +51,7 @@ class TransaksiSeeder extends Seeder
                 //membuat tanggal transaksi acak 2 tahun sampai sekarang
                 $waktu = $faker->dateTimeBetween('-2 year', 'now')->setTime($faker->randomElement($hours), $faker->randomElement($minutes), $faker->randomElement($seconds));
                 //menambil tipe harga secara acak
-                $tipe_harga = $faker->randomElement(['Retail', 'Semi Grosir', 'Grosir']);
+                $tipe_harga = $faker->randomElement(['retail', 'semi_grosir', 'grosir']);
 
                 $transaksi = Transaksi::create([
                     'kode_transaksi'  => 'TRX-' . $waktu->format('Ymd') . '-' . str_pad($i, 5, '0', STR_PAD_LEFT),

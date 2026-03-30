@@ -17,6 +17,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             //jenis perubahan stok
             $table->enum('tipe',['restock','sale','correction']);
+            $table->integer('jumlah');
+            $table->integer('stok_akhir');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
