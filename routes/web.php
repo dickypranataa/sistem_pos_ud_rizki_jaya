@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PembayaranController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\RiwayatStokController;
+use App\Http\Controllers\Admin\KoreksiStokController;
 
 //kasir
 use App\Http\Controllers\Kasir\KasirController;
@@ -28,6 +29,9 @@ Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function
     Route::resource('pembayaran', PembayaranController::class);
     Route::resource('transaksi', TransaksiController::class);
     Route::get('riwayat', [RiwayatStokController::class, 'index'])->name('riwayat.index');
+    //koreksi stok
+    Route::get('koreksi', [KoreksiStokController::class, 'create'])->name('koreksi.create');
+    Route::post('koreksi', [KoreksiStokController::class, 'store'])->name('koreksi.store');
     //struk
     Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetakStruk'])->name('transaksi.cetak');
 
