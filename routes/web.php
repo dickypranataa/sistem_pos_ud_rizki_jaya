@@ -21,7 +21,8 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group(function (){
+    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('produk', ProdukController::class);
     Route::resource('kategori', KategoriController::class);
