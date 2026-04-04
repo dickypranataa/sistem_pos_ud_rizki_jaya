@@ -29,6 +29,7 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     Route::resource('user', UserController::class);
     Route::resource('pembayaran', PembayaranController::class);
     
+    Route::get('riwayat/export-pdf', [RiwayatStokController::class, 'exportPdf'])->name('riwayat.export_pdf');
     Route::get('riwayat', [RiwayatStokController::class, 'index'])->name('riwayat.index');
     //koreksi stok
     Route::get('koreksi', [KoreksiStokController::class, 'create'])->name('koreksi.create');
@@ -38,7 +39,7 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     //export riwayat transaksi
     Route::get('transaksi/export', [TransaksiController::class, 'export'])->name('transaksi.export');
     Route::resource('transaksi', TransaksiController::class);
-    
+
     //notifikasi
     Route::get('/notifikasi/read-all', function () {
         // Menandai semua notifikasi milik admin yang sedang login menjadi "sudah dibaca"
