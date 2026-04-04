@@ -4,26 +4,41 @@
 <h2 class="text-2xl font-bold mb-4 text-gray-800">Riwayat Transaksi</h2>
 
 <!-- Search -->
-<div class="mb-4">
-    <form action="{{ route('admin.transaksi.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 items-center">
+
+<div class="mb-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+    <form action="{{ route('admin.transaksi.index') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-center">
         
-        <label for="filter_bulan" class="font-medium text-gray-700 whitespace-nowrap">Periode:</label>
+        <label class="font-bold text-gray-700 whitespace-nowrap">Filter Transaksi:</label>
         
-        <input type="month" 
-               name="filter_bulan" 
-               id="filter_bulan" 
-               value="{{ request('filter_bulan') }}"
-               class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+        <div class="flex items-center gap-2 w-full md:w-auto">
+            <span class="text-sm text-gray-500">Bulan:</span>
+            <input type="month" 
+                   name="filter_bulan" 
+                   value="{{ request('filter_bulan') }}"
+                   class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-sm">
+        </div>
+
+        <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md hidden md:block">ATAU</span>
+
+        <div class="flex items-center gap-2 w-full md:w-auto">
+            <span class="text-sm text-gray-500">Tanggal:</span>
+            <input type="date" 
+                   name="filter_tanggal" 
+                   value="{{ request('filter_tanggal') }}"
+                   class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-sm">
+        </div>
                
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition font-medium">
-            Tampilkan
-        </button>
-        
-        @if(request('filter_bulan'))
-            <a href="{{ route('admin.transaksi.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg text-center transition font-medium">
-                Reset Filter
-            </a>
-        @endif
+        <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
+            <button type="submit" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white py-2 px-5 rounded-lg transition font-semibold text-sm shadow-sm">
+                Tampilkan
+            </button>
+            
+            @if(request('filter_bulan') || request('filter_tanggal'))
+                <a href="{{ route('admin.transaksi.index') }}" class="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 py-2 px-5 rounded-lg text-center transition font-semibold text-sm">
+                    Reset
+                </a>
+            @endif
+        </div>
         
     </form>
 </div>
