@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PembayaranController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\RiwayatStokController;
 use App\Http\Controllers\Admin\KoreksiStokController;
+use App\Http\Controllers\Admin\AsistenAiController;
 
 //kasir
 use App\Http\Controllers\Kasir\KasirController;
@@ -39,6 +40,9 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     //export riwayat transaksi
     Route::get('transaksi/export', [TransaksiController::class, 'export'])->name('transaksi.export');
     Route::resource('transaksi', TransaksiController::class);
+
+    // Rute untuk AI
+    Route::post('/tanya-ai', [AsistenAiController::class, 'tanya'])->name('tanya.ai');
 
     //notifikasi
     Route::get('/notifikasi/read-all', function () {

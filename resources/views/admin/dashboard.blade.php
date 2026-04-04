@@ -154,8 +154,39 @@
                     </table>
                 </div>
             </div>
-
         </div>
+        <div class="mt-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex items-center gap-2 mb-4">
+            <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-gray-800">Asisten Bisnis AI (Gemini)</h3>
+                <p class="text-xs text-gray-500">Analisis data real-time UD Rizki Jaya</p>
+            </div>
+        </div>
+
+        <div id="chat-box" class="h-72 overflow-y-auto bg-gray-50/50 rounded-lg p-4 mb-4 border border-gray-200 flex flex-col gap-3">
+            <div class="bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[85%] self-start text-sm shadow-sm">
+                Halo bos! Saya adalah Asisten AI Anda. Data transaksi hari ini sudah saya rangkum. Ada yang ingin ditanyakan atau dianalisis?
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+            <button class="quick-prompt bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-indigo-100">Buatkan ringkasan penjualan hari ini</button>
+            <button class="quick-prompt bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-emerald-100">Barang apa yang harus segera di-restock?</button>
+            <button class="quick-prompt bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-amber-100">Beri saya ide promosi untuk besok</button>
+        </div>
+
+        <div class="flex gap-2">
+            <input type="text" id="ai-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ketik pertanyaan Anda di sini... (Tekan Enter)">
+            
+            <button id="btn-send-ai" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition shadow-sm flex items-center gap-2">
+                <span>Kirim</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+            </button>
+        </div>
+    </div>
     </div>
 
     <script>
@@ -206,5 +237,78 @@
             }).render();
 
         });
+
+        // ================= LOGIKA ASISTEN AI =================
+    const chatBox = document.getElementById('chat-box');
+    const aiInput = document.getElementById('ai-input');
+    const btnSendAi = document.getElementById('btn-send-ai');
+    const quickPrompts = document.querySelectorAll('.quick-prompt');
+
+    // Fungsi menambahkan balon chat ke layar
+    function appendMessage(sender, text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = sender === 'user' 
+            ? 'bg-indigo-600 text-white p-3 rounded-l-xl rounded-br-xl max-w-[85%] self-end text-sm shadow-sm'
+            : 'bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[85%] self-start text-sm shadow-sm';
+        
+        // Ubah newline (\n) menjadi <br> agar rapi
+        msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll ke bawah
+        return msgDiv;
+    }
+
+    // Fungsi mengirim pertanyaan ke server (Laravel)
+    async function sendQuestion(question) {
+        if (!question.trim()) return;
+
+        // 1. Tampilkan pertanyaan User
+        appendMessage('user', question);
+        aiInput.value = ''; // Kosongkan input
+        aiInput.disabled = true;
+        btnSendAi.disabled = true;
+
+        // 2. Tampilkan status "Mengetik..."
+        const typingMsg = appendMessage('ai', 'Sedang menganalisis data UD Rizki Jaya... ⏳');
+
+        try {
+            // 3. Panggil API Laravel
+            const response = await fetch("{{ route('admin.tanya.ai') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}" // Token wajib Laravel
+                },
+                body: JSON.stringify({ pertanyaan: question })
+            });
+
+            const data = await response.json();
+
+            // 4. Ganti teks "Mengetik..." dengan jawaban asli dari Gemini
+            typingMsg.innerHTML = data.jawaban.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
+
+        } catch (error) {
+            typingMsg.innerHTML = "Maaf, terjadi kesalahan jaringan atau API Key belum diatur.";
+        } finally {
+            aiInput.disabled = false;
+            btnSendAi.disabled = false;
+            aiInput.focus();
+        }
+    }
+
+    // Event Listener untuk Tombol Kirim
+    btnSendAi.addEventListener('click', () => sendQuestion(aiInput.value));
+
+    // Event Listener untuk tombol Enter di Keyboard
+    aiInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') sendQuestion(aiInput.value);
+    });
+
+    // Event Listener untuk Tombol Pertanyaan Cepat (Pills)
+    quickPrompts.forEach(button => {
+        button.addEventListener('click', function() {
+            sendQuestion(this.innerText);
+        });
+    });
     </script>
 @endsection
