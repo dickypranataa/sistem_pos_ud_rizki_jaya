@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
+use App\Exports\TransaksiExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class TransaksiController extends Controller
@@ -48,5 +50,21 @@ class TransaksiController extends Controller
         return view('admin.transaksi.cetak', compact('transaksi'));
     }
 
+    public function export(Request $request){
+        $filterBulan = $request->input('filter_bulan');
+        $filterTanggal = $request->input('filter_tanggal');
+
+        // Penamaan file Excel yang dinamis
+        $namaFile = 'Laporan_Transaksi';
+        if ($filterTanggal) {
+            $namaFile .= '_' . $filterTanggal;
+        } elseif ($filterBulan) {
+            $namaFile .= '_Bulan_' . $filterBulan;
+        } else {
+            $namaFile .= '_Semua';
+        }
+
+        return Excel::download(new TransaksiExport($filterBulan, $filterTanggal), $namaFile . '.xlsx');
+    }
 
 }
