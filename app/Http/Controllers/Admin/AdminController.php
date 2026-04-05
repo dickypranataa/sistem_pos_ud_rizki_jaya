@@ -27,6 +27,7 @@ class AdminController extends Controller
     // 2. Produk Terlaris Bulan Ini (Top 5)
     $produkTerlaris = DetailTransaksi::select('produk_id', DB::raw('SUM(jumlah) as total_terjual'))
         ->whereMonth('created_at', now()->month)
+        ->whereYear('created_at', now()->year)
         ->groupBy('produk_id')
         ->orderBy('total_terjual', 'desc')
         ->with('produk')
