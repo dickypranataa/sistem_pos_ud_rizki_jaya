@@ -91,7 +91,7 @@
                         <td class="px-6 py-4">{{ 'Rp ' . number_format($transaksis->bayar, 0, ',', '.')  }}</td>
                         <td class="px-6 py-4">{{ 'Rp ' . number_format($transaksis->kembalian, 0, ',', '.')  }}</td>
                         <td class="px-6 py-4">
-                            <a href="{{ route('admin.transaksi.show', $transaksis->id) }}"
+                            <a href="{{ route('kasir.riwayat.show', $transaksis->id) }}"
                                 class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Detail</a>
                         </td>
                     </tr>
