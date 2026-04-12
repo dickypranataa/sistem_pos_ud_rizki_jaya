@@ -7,10 +7,10 @@ use App\Models\Produk;
 use App\Models\Pembayaran;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
+use App\Models\RiwayatStok;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 
-#[Layout('layouts.kasir')]
 class KasirTransaksi extends Component
 {
     // Variabel untuk menyimpan data sementara (State)
@@ -48,6 +48,12 @@ class KasirTransaksi extends Component
 
         if ($index !== false) {
             // Jika sudah ada, tambah jumlahnya (qty)
+            //cek jika stok habis akan menampilkan error
+            if ($this->keranjang[$index]['qty'] >= $produk->stok) {
+                session()->flash('error', 'Maksimal! Sisa stok ' . $produk->nama_produk . ' hanya ' . $produk->stok);
+                return; // Hentikan penambahan
+            }
+
             $this->keranjang[$index]['qty']++;
             
         } else {
@@ -106,6 +112,17 @@ class KasirTransaksi extends Component
             return;
         }
 
+        // FINAL CHECK STOK SEBELUM DISIMPAN KE DATABASE
+        foreach ($this->keranjang as $item) {
+            $cekProduk = Produk::find($item['produk_id']);
+            
+            // Jika produk tiba-tiba dihapus admin, atau jumlah beli melebihi stok yang tersisa
+            if (!$cekProduk || $item['qty'] > $cekProduk->stok) {
+                session()->flash('error', '⚠️ Gagal! Stok "' . ($cekProduk->nama_produk ?? 'Barang Dihapus') . '" tidak mencukupi. Sisa stok: ' . ($cekProduk->stok ?? 0));
+                return; // Hentikan seluruh proses, jangan simpan transaksi!
+            }
+        }
+
         // --- MULAI LOGIKA KODE TRANSAKSI OTOMATIS ---
         $tanggalHariIni = now()->format('Ymd');
         
@@ -141,7 +158,7 @@ class KasirTransaksi extends Component
 
         // 2. Simpan Detail Transaksi & Catat Riwayat Stok
         foreach ($this->keranjang as $item) {
-            \App\Models\DetailTransaksi::create([
+            DetailTransaksi::create([
                 'transaksi_id' => $transaksi->id,
                 'produk_id'    => $item['produk_id'],
                 'jumlah'       => $item['qty'],
@@ -158,7 +175,7 @@ class KasirTransaksi extends Component
                 $produk->decrement('stok', $item['qty']); 
                 
                 // CATAT KE TABEL RIWAYAT STOK
-                \App\Models\RiwayatStok::create([
+                RiwayatStok::create([
                     'produk_id'  => $produk->id,
                     'user_id'    => auth()->user()->id, // Kasir yang bertugas
                     'tipe'       => 'sale',
@@ -190,12 +207,13 @@ class KasirTransaksi extends Component
                         ->latest()
                         ->limit(12)
                         ->get();
+                        
 
         $metodePembayaran = Pembayaran::all();
 
         return view('livewire.kasir-transaksi', [
             'produks' => $produks,
             'metodePembayaran' => $metodePembayaran
-        ]);
+        ])->layout('layouts.kasir', ['hideSidebar' => true]);
     }
 }

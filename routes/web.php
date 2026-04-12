@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\AsistenAiController;
 
 //kasir
 use App\Http\Controllers\Kasir\KasirController;
+use App\Livewire\KasirTransaksi;
+use App\Http\Controllers\Kasir\RiwayatTransaksi;
 
 
 Route::get('/', function () {
@@ -56,10 +58,15 @@ Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function
     Route::get('/dashboard', [KasirController::class, 'index'])->name('dashboard');
 
     //transaksi
-    Route::get('/transaksi', \App\Livewire\KasirTransaksi::class)->name('transaksi');
+    Route::get('/transaksi', KasirTransaksi::class)->name('transaksi');
 
     //cetak
     Route::get('/transaksi/{id}/cetak', [KasirController::class, 'cetakStruk'])->name('transaksi.cetak');
+
+    //riwayat
+    Route::get('riwayat', [RiwayatTransaksi::class, 'index'])->name('riwayat.index');
+    Route::get('riwayat/{id}', [RiwayatTransaksi::class, 'show'])->name('riwayat.show');
+    Route::get('riwayat/{id}/cetak', [RiwayatTransaksi::class, 'cetakStruk'])->name('riwayat.cetak');
 });
 
 Route::middleware('auth')->group(function () {

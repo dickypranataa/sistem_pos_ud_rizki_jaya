@@ -1,37 +1,51 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Kasir - UD Rizki Jaya</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'UD Rizki Jaya') }} - Kasir</title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @livewireStyles 
 </head>
-<body class="bg-gray-100 font-sans antialiased h-screen overflow-hidden flex flex-col">
+<body class="font-sans antialiased bg-gray-50 text-gray-900">
+    
+    <div class="min-h-screen flex">
+        
+        @if(!isset($hideSidebar) || !$hideSidebar)
+            @include('components.kasir.sidebar')
+        @endif
 
-    <header class="bg-blue-700 text-white shadow-md h-16 flex-shrink-0 flex items-center justify-between px-6 z-10">
-        <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold tracking-wider">POS KASIR</h1>
-            <span class="bg-blue-800 px-3 py-1 rounded-full text-xs font-semibold">UD Rizki Jaya</span>
+        <div class="flex-1 flex flex-col min-w-0">
+            
+            @include('components.kasir.navbar')
+
+            <main class="flex-1 p-6 overflow-y-auto">
+                
+                @if (session('success'))
+                    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-sm">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @yield('content') 
+                {{ $slot ?? '' }}
+            </main>
+
+            <footer class="bg-white border-t border-gray-200 p-4 text-center text-sm text-gray-500">
+                &copy; {{ date('Y') }} UD Rizki Jaya - Sistem POS Cerdas
+            </footer>
         </div>
+    </div>
 
-        <div class="flex items-center gap-4">
-            <span class="text-sm font-medium">Kasir: {{ Auth::user()->name ?? 'Demo' }}</span>
-            <span class="text-blue-300">|</span>
-            <a href="{{ route('admin.dashboard') }}" class="text-sm hover:text-blue-200 transition flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Keluar POS
-            </a>
-        </div>
-    </header>
-
-    <main class="flex-1 overflow-hidden">
-        {{ $slot }}
-    </main>
-
+    @livewireScripts
 </body>
 </html>

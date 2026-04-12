@@ -18,7 +18,11 @@ class KasirController extends Controller
                                   ->whereDate('waktu_transaksi', $hariIni)
                                   ->count();
 
-        return view('kasir.dashboard', compact('transaksiSaya'));
+        $omzetHariIni = Transaksi::where('user_id', Auth::user()->id)
+                                  ->whereDate('waktu_transaksi', $hariIni)
+                                  ->sum('total_harga');
+
+        return view('kasir.dashboard', compact('transaksiSaya', 'omzetHariIni'));
     }
 
     public function cetakStruk($id)

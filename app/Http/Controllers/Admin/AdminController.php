@@ -46,7 +46,7 @@ class AdminController extends Controller
     $stokTerakhir = RiwayatStok::with('produk', 'user')->latest()->take(5)->get();
 
     // Menghitung produk yang stoknya di bawah 5
-    $stokKritis = Produk::where('stok', '<', 5)->count();
+    $stokKritis = Produk::where('stok', '<=', 2)->count();
     
     // Hitung total omzet bulan ini untuk Stat Card
     $omzetBulanIni = Transaksi::whereMonth('waktu_transaksi', now()->month)->sum('total_harga');

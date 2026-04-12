@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class AsistenAiController extends Controller
 {
-    public function tanya(Request $request){
+    public function tanya(Request $request)
+    {
         $pertanyaanUser = $request->input('pertanyaan');
 
         // mengumpulkan data dari berbagai table untuk pertanyaan pengguna
@@ -24,11 +25,11 @@ class AsistenAiController extends Controller
         $produk = Produk::all();
         //produk terlaris dari dulu sampai sekarang
         $tanggalMulaiProduk = now()->format('1998-01-01');
-        
-        $totalAsetGudang = Produk::get()->sum(function($p) {
+
+        $totalAsetGudang = Produk::get()->sum(function ($p) {
             return $p->stok * $p->harga_beli;
         });
-        
+
         //jumlah total item
         $totalItem = Produk::sum('stok');
 
@@ -42,39 +43,39 @@ class AsistenAiController extends Controller
         //barang koreksi / rusak
         $barangCorrection = RiwayatStok::where('tipe', 'correction')->get();
         //Total Kerugian Akibat Barang Rusak
-        $barangKerugianRusak = RiwayatStok::with('produk')->where('tipe', 'correction')->get()->sum(function($item) {
+        $barangKerugianRusak = RiwayatStok::with('produk')->where('tipe', 'correction')->get()->sum(function ($item) {
             return abs($item->jumlah) * ($item->produk->harga_beli ?? 0);
         });
-        
+
 
         //transaksi
         $transaksi = Transaksi::all();
         //top 5 barang terlaris bulan ini
         $barangTerlarisBulanIni = DetailTransaksi::select('produk_id', DB::raw('SUM(jumlah) as total_terjual'))
-        ->whereMonth('created_at', now()->month)
-        ->whereYear('created_at', now()->year)
-        ->groupBy('produk_id')
-        ->orderBy('total_terjual', 'desc')
-        ->with('produk')
-        ->take(5)->get();
-        
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->groupBy('produk_id')
+            ->orderBy('total_terjual', 'desc')
+            ->with('produk')
+            ->take(5)->get();
+
         //top 5 produk terlaris minggu ini
         $barangTerlarisMingguan = DetailTransaksi::select('produk_id', DB::raw('SUM(jumlah) as total_terjual'))
-        ->where('created_at', '>=', now()->startOfWeek())
-        ->groupBy('produk_id')
-        ->orderBy('total_terjual', 'desc')
-        ->with('produk')
-        ->take(5)->get();
+            ->where('created_at', '>=', now()->startOfWeek())
+            ->groupBy('produk_id')
+            ->orderBy('total_terjual', 'desc')
+            ->with('produk')
+            ->take(5)->get();
 
         //hasil dari barang terlaris mingguan maupun bulanan
-        $teksTerlarisBulan = $barangTerlarisBulanIni->isEmpty() ? "Belum ada penjualan" : $barangTerlarisBulanIni->map(function($item) {
+        $teksTerlarisBulan = $barangTerlarisBulanIni->isEmpty() ? "Belum ada penjualan" : $barangTerlarisBulanIni->map(function ($item) {
             return ($item->produk->nama_produk ?? 'Dihapus') . " (" . $item->total_terjual . " pcs)";
         })->implode(', ');
 
-        $teksTerlarisMinggu = $barangTerlarisMingguan->isEmpty() ? "Belum ada penjualan" : $barangTerlarisMingguan->map(function($item) {
+        $teksTerlarisMinggu = $barangTerlarisMingguan->isEmpty() ? "Belum ada penjualan" : $barangTerlarisMingguan->map(function ($item) {
             return ($item->produk->nama_produk ?? 'Dihapus') . " (" . $item->total_terjual . " pcs)";
         })->implode(', ');
-        
+
         //omzet bulanan
         $omzetBulanan = Transaksi::where('created_at', '>=', now()->startOfMonth())->sum('total_harga');
         //omzet hari ini
@@ -84,7 +85,7 @@ class AsistenAiController extends Controller
         //omzet tahun ini
         $omzetTahunan = Transaksi::where('created_at', '>=', now()->startOfYear())->sum('total_harga');
         //jumlah transaksi hari ini
-        $transaksiNow = Transaksi::where('created_at','>=', now()->startOfDay())->count();
+        $transaksiNow = Transaksi::where('created_at', '>=', now()->startOfDay())->count();
 
         //kategori
         $kategori = Kategori::all();
@@ -133,11 +134,11 @@ class AsistenAiController extends Controller
          Tugas Anda: Jawablah pertanyaan pengguna berikut ini dengan gaya bahasa profesional, ramah, dan solutif.
         
         Pertanyaan Pengguna: $pertanyaanUser";
-        
+
 
         // --- 3. KIRIM KE API GEMINI ---
         $apiKey = trim(env('GEMINI_API_KEY'));
-        
+
         if (!$apiKey) {
             return response()->json(['jawaban' => '🚨 SISTEM: GEMINI_API_KEY tidak ditemukan!']);
         }
@@ -148,10 +149,10 @@ class AsistenAiController extends Controller
             $response = Http::withoutVerifying()->withHeaders([
                 'Content-Type' => 'application/json',
             ])->post($url, [
-                'contents' => [
-                    ['parts' => [['text' => $promptGabungan]]]
-                ]
-            ]);
+                        'contents' => [
+                            ['parts' => [['text' => $promptGabungan]]]
+                        ]
+                    ]);
 
             if (!$response->successful()) {
                 return response()->json(['jawaban' => '🚨 ERROR DARI GOOGLE: ' . $response->body()]);
