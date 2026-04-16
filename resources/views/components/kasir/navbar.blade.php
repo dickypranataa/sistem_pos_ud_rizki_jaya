@@ -30,7 +30,7 @@
                 <div class="flex justify-between items-center px-4 py-3 bg-gray-50 border-b">
                     <span class="font-bold text-gray-700">Notifikasi</span>
                     @if(auth()->user()->unreadNotifications->count() > 0)
-                        <a href="{{ route('admin.notifikasi.readAll') }}" class="text-xs text-blue-500 hover:text-blue-700">Tandai sudah dibaca</a>
+                        <a href="{{ route('notifikasi.readAll') }}" class="text-xs text-blue-500 hover:text-blue-700">Tandai sudah dibaca</a>
                     @endif
                 </div>
                 

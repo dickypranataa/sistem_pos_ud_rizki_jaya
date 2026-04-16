@@ -45,13 +45,6 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
 
     // Rute untuk AI
     Route::post('/tanya-ai', [AsistenAiController::class, 'tanya'])->name('tanya.ai');
-
-    //notifikasi
-    Route::get('/notifikasi/read-all', function () {
-        // Menandai semua notifikasi milik admin yang sedang login menjadi "sudah dibaca"
-        request()->user()->unreadNotifications->markAsRead();
-        return redirect()->back();
-    })->name('notifikasi.readAll');
 });
 
 Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function () {
@@ -70,6 +63,12 @@ Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function
 });
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/notifikasi/read-all', function () {
+        request()->user()->unreadNotifications->markAsRead();
+        return redirect()->back();
+    })->name('notifikasi.readAll');
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

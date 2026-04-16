@@ -136,34 +136,54 @@ class AsistenAiController extends Controller
         Pertanyaan Pengguna: $pertanyaanUser";
 
 
-        // --- 3. KIRIM KE API GEMINI ---
+        // --- 3. KIRIM KE API GEMINI
         $apiKey = trim(env('GEMINI_API_KEY'));
 
         if (!$apiKey) {
             return response()->json(['jawaban' => '🚨 SISTEM: GEMINI_API_KEY tidak ditemukan!']);
         }
 
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
+        // Daftar model
+        $daftarModel = [
+            'gemini-2.5-flash',
+            'gemini-2.5-flash-lite',
+            'gemini-2.5-pro'
+        ];
 
-        try {
-            $response = Http::withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json',
-            ])->post($url, [
-                        'contents' => [
-                            ['parts' => [['text' => $promptGabungan]]]
-                        ]
-                    ]);
+        $jawabanAi = null;
+        $pesanErrorTerakhir = '';
 
-            if (!$response->successful()) {
-                return response()->json(['jawaban' => '🚨 ERROR DARI GOOGLE: ' . $response->body()]);
+        // Looping untuk mencoba model satu per satu
+        foreach ($daftarModel as $model) {
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
+
+            try {
+                $response = Http::withoutVerifying()->withHeaders([
+                    'Content-Type' => 'application/json',
+                ])->post($url, [
+                            'contents' => [
+                                ['parts' => [['text' => $promptGabungan]]]
+                            ]
+                        ]);
+
+                // Jika berhasil (Status 200 OK)
+                if ($response->successful()) {
+                    $jawabanAi = $response->json('candidates.0.content.parts.0.text');
+                    break;
+                } else {
+                    $pesanErrorTerakhir = $response->body();
+                }
+
+            } catch (\Exception $e) {
+                $pesanErrorTerakhir = $e->getMessage();
             }
+        }
 
-            $jawabanAi = $response->json('candidates.0.content.parts.0.text');
-
-            return response()->json(['jawaban' => $jawabanAi ?? 'Maaf, saya tidak bisa merangkai jawaban.']);
-
-        } catch (\Exception $e) {
-            return response()->json(['jawaban' => '🚨 ERROR JARINGAN: ' . $e->getMessage()]);
+        // --- 4. CEK HASIL AKHIR ---
+        if ($jawabanAi) {
+            return response()->json(['jawaban' => $jawabanAi]);
+        } else {
+            return response()->json(['jawaban' => "🚨 ERROR DARI GOOGLE (Semua server sibuk). Detail: " . $pesanErrorTerakhir]);
         }
     }
 }
