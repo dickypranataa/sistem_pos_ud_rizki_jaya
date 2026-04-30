@@ -55,9 +55,9 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 mt-8">
-            
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 mt-8">
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Tren Pendapatan (7 Hari Terakhir)</h3>
                 <div id="chart-omzet" class="w-full"></div>
             </div>
@@ -65,7 +65,10 @@
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-gray-800">Asisten Bisnis AI</h3>
@@ -73,22 +76,37 @@
                     </div>
                 </div>
 
-                <div id="chat-box" class="flex-1 overflow-y-auto bg-gray-50/50 rounded-lg p-4 mb-4 border border-gray-200 flex flex-col gap-3 min-h-[250px] max-h-[350px]">
-                    <div class="bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[90%] self-start text-sm shadow-sm">
-                        Halo bos! Saya adalah Asisten AI Anda. Data transaksi hari ini sudah saya rangkum. Ada yang ingin ditanyakan?
+                <div id="chat-box"
+                    class="flex-1 overflow-y-auto bg-gray-50/50 rounded-lg p-4 mb-4 border border-gray-200 flex flex-col gap-3 min-h-[250px] max-h-[350px]">
+                    <div
+                        class="bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[90%] self-start text-sm shadow-sm">
+                        Halo bos! Saya adalah Asisten AI Anda. Data transaksi hari ini sudah saya rangkum. Ada yang ingin
+                        ditanyakan?
                     </div>
                 </div>
 
                 <div class="flex flex-wrap gap-2 mb-4">
-                    <button class="quick-prompt bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-indigo-100">Ringkasan hari ini</button>
-                    <button class="quick-prompt bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-emerald-100">Cek stok kritis</button>
-                    <button class="quick-prompt bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-amber-100">Ide promosi</button>
+                    <button
+                        class="quick-prompt bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-indigo-100">Ringkasan
+                        hari ini</button>
+                    <button
+                        class="quick-prompt bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-emerald-100">Cek
+                        stok kritis</button>
+                    <button
+                        class="quick-prompt bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-amber-100">Ide
+                        promosi</button>
                 </div>
 
                 <div class="flex gap-2 mt-auto">
-                    <input type="text" id="ai-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ketik di sini...">
-                    <button id="btn-send-ai" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition shadow-sm flex items-center justify-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <input type="text" id="ai-input"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="Ketik di sini...">
+                    <button id="btn-send-ai"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition shadow-sm flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -112,7 +130,8 @@
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-bold text-gray-800">5 Transaksi Terakhir</h3>
-                    <a href="#" class="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Lihat Semua</a>
+                    <a href="{{ route('admin.transaksi.index') }}"
+                        class="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Lihat Semua</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -129,9 +148,11 @@
                                 <tr class="hover:bg-gray-50/50">
                                     <td class="px-4 py-3 font-medium text-indigo-600">{{ $trx->kode_transaksi }}</td>
                                     <td class="px-4 py-3 text-gray-500">
-                                        {{ \Carbon\Carbon::parse($trx->waktu_transaksi)->translatedFormat('d M, H:i') }}</td>
+                                        {{ \Carbon\Carbon::parse($trx->waktu_transaksi)->translatedFormat('d M, H:i') }}
+                                    </td>
                                     <td class="px-4 py-3 text-right font-bold text-gray-900">Rp
-                                        {{ number_format($trx->total_harga, 0, ',', '.') }}</td>
+                                        {{ number_format($trx->total_harga, 0, ',', '.') }}
+                                    </td>
                                     <td class="px-4 py-3">
                                         <span
                                             class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded font-semibold">{{ $trx->pembayaran->nama_pembayaran ?? '-' }}</span>
@@ -167,7 +188,8 @@
                             @forelse($stokTerakhir as $stok)
                                 <tr class="hover:bg-gray-50/50">
                                     <td class="px-4 py-3 font-medium text-gray-900 truncate max-w-[150px]">
-                                        {{ $stok->produk->nama_produk ?? 'Dihapus' }}</td>
+                                        {{ $stok->produk->nama_produk ?? 'Dihapus' }}
+                                    </td>
                                     <td class="px-4 py-3">
                                         @if($stok->tipe === 'sale') <span
                                             class="text-red-500 font-semibold text-xs">Penjualan</span>
@@ -177,7 +199,8 @@
                                     </td>
                                     <td
                                         class="px-4 py-3 text-center font-bold {{ $stok->jumlah < 0 ? 'text-red-600' : 'text-emerald-600' }}">
-                                        {{ $stok->jumlah > 0 ? '+' : '' }}{{ $stok->jumlah }}</td>
+                                        {{ $stok->jumlah > 0 ? '+' : '' }}{{ $stok->jumlah }}
+                                    </td>
                                     <td class="px-4 py-3 text-center text-gray-600 font-semibold">{{ $stok->stok_akhir }}</td>
                                 </tr>
                             @empty
@@ -190,7 +213,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 
     <script>
@@ -243,76 +266,76 @@
         });
 
         // ================= LOGIKA ASISTEN AI =================
-    const chatBox = document.getElementById('chat-box');
-    const aiInput = document.getElementById('ai-input');
-    const btnSendAi = document.getElementById('btn-send-ai');
-    const quickPrompts = document.querySelectorAll('.quick-prompt');
+        const chatBox = document.getElementById('chat-box');
+        const aiInput = document.getElementById('ai-input');
+        const btnSendAi = document.getElementById('btn-send-ai');
+        const quickPrompts = document.querySelectorAll('.quick-prompt');
 
-    // Fungsi menambahkan balon chat ke layar
-    function appendMessage(sender, text) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = sender === 'user' 
-            ? 'bg-indigo-600 text-white p-3 rounded-l-xl rounded-br-xl max-w-[85%] self-end text-sm shadow-sm'
-            : 'bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[85%] self-start text-sm shadow-sm';
-        
-        // Ubah newline (\n) menjadi <br> agar rapi
-        msgDiv.innerHTML = text.replace(/\n/g, '<br>');
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll ke bawah
-        return msgDiv;
-    }
+        // Fungsi menambahkan balon chat ke layar
+        function appendMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = sender === 'user'
+                ? 'bg-indigo-600 text-white p-3 rounded-l-xl rounded-br-xl max-w-[85%] self-end text-sm shadow-sm'
+                : 'bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[85%] self-start text-sm shadow-sm';
 
-    // Fungsi mengirim pertanyaan ke server (Laravel)
-    async function sendQuestion(question) {
-        if (!question.trim()) return;
-
-        // 1. Tampilkan pertanyaan User
-        appendMessage('user', question);
-        aiInput.value = ''; // Kosongkan input
-        aiInput.disabled = true;
-        btnSendAi.disabled = true;
-
-        // 2. Tampilkan status "Mengetik..."
-        const typingMsg = appendMessage('ai', 'Sedang menganalisis data UD Rizki Jaya... ⏳');
-
-        try {
-            // 3. Panggil API Laravel
-            const response = await fetch("{{ route('admin.tanya.ai') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}" // Token wajib Laravel
-                },
-                body: JSON.stringify({ pertanyaan: question })
-            });
-
-            const data = await response.json();
-
-            // 4. Ganti teks "Mengetik..." dengan jawaban asli dari Gemini
-            typingMsg.innerHTML = data.jawaban.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
-
-        } catch (error) {
-            typingMsg.innerHTML = "Maaf, terjadi kesalahan jaringan atau API Key belum diatur.";
-        } finally {
-            aiInput.disabled = false;
-            btnSendAi.disabled = false;
-            aiInput.focus();
+            // Ubah newline (\n) menjadi <br> agar rapi
+            msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll ke bawah
+            return msgDiv;
         }
-    }
 
-    // Event Listener untuk Tombol Kirim
-    btnSendAi.addEventListener('click', () => sendQuestion(aiInput.value));
+        // Fungsi mengirim pertanyaan ke server (Laravel)
+        async function sendQuestion(question) {
+            if (!question.trim()) return;
 
-    // Event Listener untuk tombol Enter di Keyboard
-    aiInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') sendQuestion(aiInput.value);
-    });
+            // 1. Tampilkan pertanyaan User
+            appendMessage('user', question);
+            aiInput.value = ''; // Kosongkan input
+            aiInput.disabled = true;
+            btnSendAi.disabled = true;
 
-    // Event Listener untuk Tombol Pertanyaan Cepat (Pills)
-    quickPrompts.forEach(button => {
-        button.addEventListener('click', function() {
-            sendQuestion(this.innerText);
+            // 2. Tampilkan status "Mengetik..."
+            const typingMsg = appendMessage('ai', 'Sedang menganalisis data UD Rizki Jaya... ⏳');
+
+            try {
+                // 3. Panggil API Laravel
+                const response = await fetch("{{ route('admin.tanya.ai') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}" // Token wajib Laravel
+                    },
+                    body: JSON.stringify({ pertanyaan: question })
+                });
+
+                const data = await response.json();
+
+                // 4. Ganti teks "Mengetik..." dengan jawaban asli dari Gemini
+                typingMsg.innerHTML = data.jawaban.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+            } catch (error) {
+                typingMsg.innerHTML = "Maaf, terjadi kesalahan jaringan atau API Key belum diatur.";
+            } finally {
+                aiInput.disabled = false;
+                btnSendAi.disabled = false;
+                aiInput.focus();
+            }
+        }
+
+        // Event Listener untuk Tombol Kirim
+        btnSendAi.addEventListener('click', () => sendQuestion(aiInput.value));
+
+        // Event Listener untuk tombol Enter di Keyboard
+        aiInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendQuestion(aiInput.value);
         });
-    });
+
+        // Event Listener untuk Tombol Pertanyaan Cepat (Pills)
+        quickPrompts.forEach(button => {
+            button.addEventListener('click', function () {
+                sendQuestion(this.innerText);
+            });
+        });
     </script>
 @endsection

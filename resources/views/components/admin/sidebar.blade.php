@@ -1,4 +1,4 @@
-<aside class="w-64 bg-white border-r border-gray-200 hidden md:block flex-shrink-0">
+<aside id="sidebar-menu" class="w-64 bg-white border-r border-gray-200 flex-shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out">
     <div class="h-16 flex items-center justify-center border-b border-gray-200 bg-blue-600">
         <h2 class="text-xl font-bold text-white tracking-wider">UD RIZKI JAYA</h2>
     </div>

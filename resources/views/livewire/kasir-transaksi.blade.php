@@ -13,6 +13,11 @@
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
+
+            <a href="{{ route('kasir.dashboard') }}"
+                class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg flex items-center transition">
+                &larr; Kembali
+            </a>
         </div>
 
         @if (session()->has('error'))

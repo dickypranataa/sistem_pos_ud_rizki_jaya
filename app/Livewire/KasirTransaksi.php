@@ -229,6 +229,10 @@ class KasirTransaksi extends Component
         return view('livewire.kasir-transaksi', [
             'produks' => $produks,
             'metodePembayaran' => $metodePembayaran
-        ])->layout('layouts.kasir', ['hideSidebar' => true]);
+        ])->layout('layouts.kasir', [
+                    'hideSidebar' => true,
+                    'hideNavbar' => true,
+                    'hideFooter' => true,
+                ]);
     }
 }

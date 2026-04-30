@@ -38,6 +38,27 @@
             </footer>
         </div>
     </div>
+<!-- Script untuk Toggle Sidebar Mobile -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnHamburger = document.getElementById('btn-hamburger');
+            const sidebarMenu = document.getElementById('sidebar-menu');
 
+            if (btnHamburger && sidebarMenu) {
+                // Munculkan/Sembunyikan saat tombol diklik
+                btnHamburger.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Mencegah klik bocor
+                    sidebarMenu.classList.toggle('-translate-x-full');
+                });
+
+                // Tutup sidebar jika user klik di luar area sidebar
+                document.addEventListener('click', function(e) {
+                    if (!sidebarMenu.contains(e.target) && !btnHamburger.contains(e.target)) {
+                        sidebarMenu.classList.add('-translate-x-full');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

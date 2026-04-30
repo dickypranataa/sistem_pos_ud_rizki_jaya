@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Kasir;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
+use Illuminate\Support\Facades\Auth;
 
 
 class RiwayatTransaksi extends Controller
@@ -17,6 +18,7 @@ class RiwayatTransaksi extends Controller
         $filterTanggal = $request->input('filter_tanggal');
 
     $transaksi = Transaksi::with(['user', 'pembayaran'])
+        ->where('user_id', Auth::id())
         ->when($filterBulan, function ($query) use ($filterBulan) {
             $waktu = explode('-', $filterBulan);
             
