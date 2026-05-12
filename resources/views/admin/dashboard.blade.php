@@ -3,109 +3,104 @@
 @section('content')
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50/50 min-h-screen">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
 
+        {{-- Header --}}
         <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800">Dashboard Analitik</h2>
+            <h2 class="text-2xl font-bold text-gray-900">Dashboard Analitik</h2>
             <p class="text-sm text-gray-500 mt-1">Ringkasan performa penjualan dan pergerakan stok UD Rizki Jaya.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
-                <div class="p-4 bg-indigo-50 text-indigo-600 rounded-lg mr-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {{-- Stat Cards --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-5 hover:shadow-md transition">
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                        </path>
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Total Omzet Bulan Ini</p>
-                    <h3 class="text-2xl font-bold text-gray-900">Rp {{ number_format($omzetBulanIni, 0, ',', '.') }}</h3>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Total Omzet Bulan Ini</p>
+                    <h3 class="text-xl font-bold text-gray-900">Rp {{ number_format($omzetBulanIni, 0, ',', '.') }}</h3>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
-                <div class="p-4 bg-emerald-50 text-emerald-600 rounded-lg mr-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-5 hover:shadow-md transition">
+                <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                        </path>
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Total Transaksi</p>
-                    <h3 class="text-2xl font-bold text-gray-900">{{ number_format($totalTransaksiBulanIni, 0, ',', '.') }}
-                        Nota</h3>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Total Transaksi</p>
+                    <h3 class="text-xl font-bold text-gray-900">{{ number_format($totalTransaksiBulanIni, 0, ',', '.') }} <span class="text-sm font-medium text-gray-400">Nota</span></h3>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
-                <div class="p-4 bg-red-50 text-red-600 rounded-lg mr-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-5 hover:shadow-md transition">
+                <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                        </path>
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Peringatan Stok Kritis</p>
-                    <h3 class="text-2xl font-bold text-gray-900">{{ $stokKritis }} Produk</h3>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Peringatan Stok Kritis</p>
+                    <h3 class="text-xl font-bold text-gray-900">{{ $stokKritis }} <span class="text-sm font-medium text-gray-400">Produk</span></h3>
                 </div>
             </div>
+
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 mt-8">
+        {{-- Charts Row 1: Omzet + AI --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Tren Pendapatan (7 Hari Terakhir)</h3>
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold text-gray-800">Tren Pendapatan (7 Hari Terakhir)</h3>
+                    <span class="text-xs text-blue-600 bg-blue-50 font-semibold px-2.5 py-1 rounded-lg">Area</span>
+                </div>
                 <div id="chart-omzet" class="w-full"></div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            {{-- AI Assistant --}}
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-800">Asisten Bisnis AI</h3>
-                        <p class="text-xs text-gray-500">Analisis data real-time</p>
+                        <h3 class="text-base font-bold text-gray-800">Asisten Bisnis AI</h3>
+                        <p class="text-xs text-gray-400">Analisis data real-time</p>
                     </div>
                 </div>
 
                 <div id="chat-box"
-                    class="flex-1 overflow-y-auto bg-gray-50/50 rounded-lg p-4 mb-4 border border-gray-200 flex flex-col gap-3 min-h-[250px] max-h-[350px]">
-                    <div
-                        class="bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[90%] self-start text-sm shadow-sm">
-                        Halo bos! Saya adalah Asisten AI Anda. Data transaksi hari ini sudah saya rangkum. Ada yang ingin
-                        ditanyakan?
+                    class="flex-1 overflow-y-auto bg-gray-50 rounded-xl p-4 mb-4 border border-gray-100 flex flex-col gap-3 min-h-[220px] max-h-[320px]">
+                    <div class="bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[90%] self-start text-sm shadow-sm">
+                        Halo bos! Saya adalah Asisten AI Anda. Data transaksi hari ini sudah saya rangkum. Ada yang ingin ditanyakan?
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <button
-                        class="quick-prompt bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-indigo-100">Ringkasan
-                        hari ini</button>
-                    <button
-                        class="quick-prompt bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-emerald-100">Cek
-                        stok kritis</button>
-                    <button
-                        class="quick-prompt bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-medium py-1.5 px-3 rounded-full transition border border-amber-100">Ide
-                        promosi</button>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <button class="quick-prompt bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold py-1.5 px-3 rounded-full transition border border-blue-100">Ringkasan hari ini</button>
+                    <button class="quick-prompt bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold py-1.5 px-3 rounded-full transition border border-emerald-100">Cek stok kritis</button>
+                    <button class="quick-prompt bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold py-1.5 px-3 rounded-full transition border border-amber-100">Ide promosi</button>
                 </div>
 
                 <div class="flex gap-2 mt-auto">
                     <input type="text" id="ai-input"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Ketik di sini...">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                        placeholder="Tanyakan sesuatu...">
                     <button id="btn-send-ai"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition shadow-sm flex items-center justify-center">
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm flex items-center justify-center flex-shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                         </svg>
                     </button>
                 </div>
@@ -113,54 +108,66 @@
 
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">5 Produk Terlaris Bulan Ini</h3>
+        {{-- Charts Row 2: Produk Terlaris + Pembayaran --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold text-gray-800">5 Produk Terlaris Bulan Ini</h3>
+                    <span class="text-xs text-blue-600 bg-blue-50 font-semibold px-2.5 py-1 rounded-lg">Bar</span>
+                </div>
                 <div id="chart-produk" class="w-full"></div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Komposisi Metode Pembayaran</h3>
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold text-gray-800">Komposisi Metode Pembayaran</h3>
+                    <span class="text-xs text-blue-600 bg-blue-50 font-semibold px-2.5 py-1 rounded-lg">Donut</span>
+                </div>
                 <div id="chart-pembayaran" class="w-full flex justify-center"></div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {{-- Tables Row --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">5 Transaksi Terakhir</h3>
+            {{-- 5 Transaksi Terakhir --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+                    <h3 class="text-base font-bold text-gray-800">5 Transaksi Terakhir</h3>
                     <a href="{{ route('admin.transaksi.index') }}"
-                        class="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Lihat Semua</a>
+                        class="text-xs text-blue-600 font-semibold hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
+                        Lihat Semua →
+                    </a>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                                <th class="px-4 py-3 rounded-tl-lg">Kode</th>
-                                <th class="px-4 py-3">Waktu</th>
-                                <th class="px-4 py-3 text-right">Total</th>
-                                <th class="px-4 py-3 rounded-tr-lg">Bayar Via</th>
+                            <tr class="bg-gray-50 border-b border-gray-100">
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Kode</th>
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Waktu</th>
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Total</th>
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Bayar Via</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-sm">
+                        <tbody class="divide-y divide-gray-50 text-sm">
                             @forelse($transaksiTerakhir as $trx)
-                                <tr class="hover:bg-gray-50/50">
-                                    <td class="px-4 py-3 font-medium text-indigo-600">{{ $trx->kode_transaksi }}</td>
-                                    <td class="px-4 py-3 text-gray-500">
+                                <tr class="hover:bg-gray-50/50 transition">
+                                    <td class="px-5 py-3">
+                                        <span class="font-mono text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">{{ $trx->kode_transaksi }}</span>
+                                    </td>
+                                    <td class="px-5 py-3 text-gray-500 text-xs whitespace-nowrap">
                                         {{ \Carbon\Carbon::parse($trx->waktu_transaksi)->translatedFormat('d M, H:i') }}
                                     </td>
-                                    <td class="px-4 py-3 text-right font-bold text-gray-900">Rp
-                                        {{ number_format($trx->total_harga, 0, ',', '.') }}
+                                    <td class="px-5 py-3 text-right font-bold text-gray-900 text-xs whitespace-nowrap">
+                                        Rp {{ number_format($trx->total_harga, 0, ',', '.') }}
                                     </td>
-                                    <td class="px-4 py-3">
-                                        <span
-                                            class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded font-semibold">{{ $trx->pembayaran->nama_pembayaran ?? '-' }}</span>
+                                    <td class="px-5 py-3">
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg font-semibold">{{ $trx->pembayaran->nama_pembayaran ?? '-' }}</span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-4 text-gray-500">Belum ada transaksi.</td>
+                                    <td colspan="4" class="text-center py-8 text-gray-400 text-sm">Belum ada transaksi.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -168,101 +175,98 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">Riwayat Stok Terakhir</h3>
+            {{-- Riwayat Stok Terakhir --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+                    <h3 class="text-base font-bold text-gray-800">Riwayat Stok Terakhir</h3>
                     <a href="{{ route('admin.riwayat.index') }}"
-                        class="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Lihat Semua</a>
+                        class="text-xs text-blue-600 font-semibold hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
+                        Lihat Semua →
+                    </a>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                                <th class="px-4 py-3 rounded-tl-lg">Produk</th>
-                                <th class="px-4 py-3">Jenis</th>
-                                <th class="px-4 py-3 text-center">Qty</th>
-                                <th class="px-4 py-3 text-center rounded-tr-lg">Sisa</th>
+                            <tr class="bg-gray-50 border-b border-gray-100">
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Produk</th>
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Jenis</th>
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center">Qty</th>
+                                <th class="px-5 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center">Sisa</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-sm">
+                        <tbody class="divide-y divide-gray-50 text-sm">
                             @forelse($stokTerakhir as $stok)
-                                <tr class="hover:bg-gray-50/50">
-                                    <td class="px-4 py-3 font-medium text-gray-900 truncate max-w-[150px]">
+                                <tr class="hover:bg-gray-50/50 transition">
+                                    <td class="px-5 py-3 font-medium text-gray-900 max-w-[130px] truncate">
                                         {{ $stok->produk->nama_produk ?? 'Dihapus' }}
                                     </td>
-                                    <td class="px-4 py-3">
-                                        @if($stok->tipe === 'sale') <span
-                                            class="text-red-500 font-semibold text-xs">Penjualan</span>
-                                        @elseif($stok->tipe === 'restock') <span
-                                            class="text-emerald-500 font-semibold text-xs">Restock</span>
-                                        @else <span class="text-amber-500 font-semibold text-xs">Koreksi</span> @endif
+                                    <td class="px-5 py-3">
+                                        @if($stok->tipe === 'sale')
+                                            <span class="px-2 py-1 bg-red-50 text-red-600 text-[11px] font-bold rounded-lg border border-red-100">Penjualan</span>
+                                        @elseif($stok->tipe === 'restock')
+                                            <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[11px] font-bold rounded-lg border border-emerald-100">Restock</span>
+                                        @else
+                                            <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[11px] font-bold rounded-lg border border-amber-100">Koreksi</span>
+                                        @endif
                                     </td>
-                                    <td
-                                        class="px-4 py-3 text-center font-bold {{ $stok->jumlah < 0 ? 'text-red-600' : 'text-emerald-600' }}">
+                                    <td class="px-5 py-3 text-center font-bold text-sm {{ $stok->jumlah < 0 ? 'text-red-600' : 'text-emerald-600' }}">
                                         {{ $stok->jumlah > 0 ? '+' : '' }}{{ $stok->jumlah }}
                                     </td>
-                                    <td class="px-4 py-3 text-center text-gray-600 font-semibold">{{ $stok->stok_akhir }}</td>
+                                    <td class="px-5 py-3 text-center text-gray-600 font-semibold text-sm">{{ $stok->stok_akhir }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-4 text-gray-500">Belum ada pergerakan stok.</td>
+                                    <td colspan="4" class="text-center py-8 text-gray-400 text-sm">Belum ada pergerakan stok.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-
-            // 1. DATA PHP KE JAVASCRIPT
             const labelTanggal = @json($omzet7Hari->map(fn($item) => \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d M')));
             const dataOmzet = @json($omzet7Hari->pluck('total'));
-
             const labelProduk = @json($produkTerlaris->map(fn($item) => $item->produk->nama_produk ?? 'Dihapus'));
             const dataProduk = @json($produkTerlaris->pluck('total_terjual'));
-
             const labelPembayaran = @json($metodePembayaran->map(fn($item) => $item->pembayaran->nama_pembayaran ?? 'Lainnya'));
             const dataPembayaran = @json($metodePembayaran->pluck('total'));
 
-
-            // 2. RENDER GRAFIK TREN OMZET (AREA)
             new ApexCharts(document.querySelector("#chart-omzet"), {
                 series: [{ name: 'Pendapatan (Rp)', data: dataOmzet }],
-                chart: { type: 'area', height: 320, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-                colors: ['#4F46E5'], // Indigo-600
-                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] } },
+                chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+                colors: ['#2563EB'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.02, stops: [0, 100] } },
                 dataLabels: { enabled: false },
-                stroke: { curve: 'smooth', width: 3 },
-                xaxis: { categories: labelTanggal, tooltip: { enabled: false } },
-                yaxis: { labels: { formatter: (value) => "Rp " + (value / 1000000).toFixed(1) + " Jt" } }
+                stroke: { curve: 'smooth', width: 2.5 },
+                xaxis: { categories: labelTanggal, tooltip: { enabled: false }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { formatter: (value) => "Rp " + (value / 1000000).toFixed(1) + " Jt", style: { colors: ['#9CA3AF'], fontSize: '11px' } } },
+                grid: { borderColor: '#F3F4F6', strokeDashArray: 4 }
             }).render();
 
-            // 3. RENDER GRAFIK PRODUK TERLARIS (BAR HORIZONTAL)
             new ApexCharts(document.querySelector("#chart-produk"), {
                 series: [{ name: 'Terjual (Pcs)', data: dataProduk }],
-                chart: { type: 'bar', height: 320, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-                plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '50%' } },
-                colors: ['#0EA5E9'], // Sky-500
-                dataLabels: { enabled: true, style: { colors: ['#fff'] } },
-                xaxis: { categories: labelProduk }
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+                plotOptions: { bar: { horizontal: true, borderRadius: 5, barHeight: '45%' } },
+                colors: ['#2563EB'],
+                dataLabels: { enabled: true, style: { colors: ['#fff'], fontSize: '11px' } },
+                xaxis: { categories: labelProduk, axisBorder: { show: false }, axisTicks: { show: false } },
+                grid: { borderColor: '#F3F4F6', strokeDashArray: 4 }
             }).render();
 
-            // 4. RENDER GRAFIK METODE PEMBAYARAN (PIE/DONUT)
             new ApexCharts(document.querySelector("#chart-pembayaran"), {
                 series: dataPembayaran,
                 labels: labelPembayaran,
-                chart: { type: 'donut', height: 320, fontFamily: 'Inter, sans-serif' },
-                colors: ['#10B981', '#3B82F6', '#F59E0B', '#6366F1'],
-                plotOptions: { pie: { donut: { size: '65%' } } },
-                dataLabels: { enabled: true },
-                legend: { position: 'bottom' }
+                chart: { type: 'donut', height: 280, fontFamily: 'Inter, sans-serif' },
+                colors: ['#2563EB', '#10B981', '#F59E0B', '#6366F1'],
+                plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '12px' } } } } },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', fontSize: '12px' }
             }).render();
-
         });
 
         // ================= LOGIKA ASISTEN AI =================
@@ -271,49 +275,32 @@
         const btnSendAi = document.getElementById('btn-send-ai');
         const quickPrompts = document.querySelectorAll('.quick-prompt');
 
-        // Fungsi menambahkan balon chat ke layar
         function appendMessage(sender, text) {
             const msgDiv = document.createElement('div');
             msgDiv.className = sender === 'user'
-                ? 'bg-indigo-600 text-white p-3 rounded-l-xl rounded-br-xl max-w-[85%] self-end text-sm shadow-sm'
+                ? 'bg-blue-600 text-white p-3 rounded-l-xl rounded-br-xl max-w-[85%] self-end text-sm shadow-sm'
                 : 'bg-white border border-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[85%] self-start text-sm shadow-sm';
-
-            // Ubah newline (\n) menjadi <br> agar rapi
             msgDiv.innerHTML = text.replace(/\n/g, '<br>');
             chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll ke bawah
+            chatBox.scrollTop = chatBox.scrollHeight;
             return msgDiv;
         }
 
-        // Fungsi mengirim pertanyaan ke server (Laravel)
         async function sendQuestion(question) {
             if (!question.trim()) return;
-
-            // 1. Tampilkan pertanyaan User
             appendMessage('user', question);
-            aiInput.value = ''; // Kosongkan input
+            aiInput.value = '';
             aiInput.disabled = true;
             btnSendAi.disabled = true;
-
-            // 2. Tampilkan status "Mengetik..."
             const typingMsg = appendMessage('ai', 'Sedang menganalisis data UD Rizki Jaya... ⏳');
-
             try {
-                // 3. Panggil API Laravel
                 const response = await fetch("{{ route('admin.tanya.ai') }}", {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
                     body: JSON.stringify({ pertanyaan: question })
                 });
-
                 const data = await response.json();
-
-                // 4. Ganti teks "Mengetik..." dengan jawaban asli dari Gemini
                 typingMsg.innerHTML = data.jawaban.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-
             } catch (error) {
                 typingMsg.innerHTML = "Maaf, terjadi kesalahan jaringan atau API Key belum diatur.";
             } finally {
@@ -323,19 +310,8 @@
             }
         }
 
-        // Event Listener untuk Tombol Kirim
         btnSendAi.addEventListener('click', () => sendQuestion(aiInput.value));
-
-        // Event Listener untuk tombol Enter di Keyboard
-        aiInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') sendQuestion(aiInput.value);
-        });
-
-        // Event Listener untuk Tombol Pertanyaan Cepat (Pills)
-        quickPrompts.forEach(button => {
-            button.addEventListener('click', function () {
-                sendQuestion(this.innerText);
-            });
-        });
+        aiInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sendQuestion(aiInput.value); });
+        quickPrompts.forEach(button => { button.addEventListener('click', function () { sendQuestion(this.innerText); }); });
     </script>
 @endsection
