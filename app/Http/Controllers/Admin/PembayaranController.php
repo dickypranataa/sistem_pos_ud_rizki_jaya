@@ -16,7 +16,7 @@ class PembayaranController extends Controller
 
     public function store(Request $request){
         $validate = $request->validate([
-            'nama_pembayaran' => 'required|string|max:255',
+            'nama_pembayaran' => 'required|string|max:255|unique:pembayarans,nama_pembayaran',
         ]);
 
         Pembayaran::create($validate);
@@ -26,7 +26,7 @@ class PembayaranController extends Controller
 
     public function update(Request $request, $id){
         $validate = $request->validate([
-            'nama_pembayaran' => 'required|string|max:255',
+            'nama_pembayaran' => 'required|string|max:255|unique:pembayarans,nama_pembayaran,' . $id,
         ]);
 
         Pembayaran::find($id)->update($validate);

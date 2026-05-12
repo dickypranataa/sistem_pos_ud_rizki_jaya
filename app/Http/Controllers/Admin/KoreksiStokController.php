@@ -56,23 +56,26 @@ class KoreksiStokController extends Controller
         if ($isPenambahan) {
             $produk->increment('stok', $jumlah);
             $angkaRiwayat = $jumlah;
+            $keterangan = $request->keterangan;
         } else {
-            // Cek jika stok minus
+            // BLOKIR JIKA PENGURANGAN MELEBIHI STOK
             if ($produk->stok < $jumlah) {
-                return back()->with('error', 'Jumlah pengurangan melebihi sisa stok saat ini!')->withInput();
+                return back()->with('error', "Koreksi gagal: Jumlah pengurangan ($jumlah) melebihi sisa stok saat ini ({$produk->stok}).")->withInput();
             }
+            
             $produk->decrement('stok', $jumlah);
             $angkaRiwayat = -$jumlah;
+            $keterangan = $request->keterangan;
         }
 
         // 4. Catat ke Tabel Riwayat Stok sesuai tipe aslinya
         RiwayatStok::create([
             'produk_id'  => $produk->id,
             'user_id'    => auth()->user()->id,
-            'tipe'       => $tipeDatabase, // Akan berisi: restock, sale, atau correction
+            'tipe'       => $tipeDatabase,
             'jumlah'     => $angkaRiwayat,
             'stok_akhir' => $stokSebelumnya + $angkaRiwayat,
-            'keterangan' => $request->keterangan
+            'keterangan' => $keterangan
         ]);
 
         return back()->with('success', 'Koreksi stok berhasil dicatat!');

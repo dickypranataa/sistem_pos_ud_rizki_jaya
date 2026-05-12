@@ -50,6 +50,8 @@
             </div>
 
         </form>
+        @error('filter_bulan') <span class="text-red-500 text-xs block mt-2">{{ $message }}</span> @enderror
+        @error('filter_tanggal') <span class="text-red-500 text-xs block mt-2">{{ $message }}</span> @enderror
     </div>
 
     <div class="mb-4">

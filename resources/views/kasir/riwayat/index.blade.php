@@ -53,7 +53,7 @@
     </div>
 
     <div class="mb-4">
-        <a href="{{ route('admin.transaksi.export', request()->query()) }}"
+        <a href="{{ route('kasir.riwayat.export', request()->query()) }}"
             class="inline-flex items-center justify-center w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-5 rounded-lg transition font-semibold text-sm shadow-sm gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

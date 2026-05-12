@@ -22,8 +22,8 @@
     <div class="header">
         <h2>UD RIZKI JAYA</h2>
         <p>Laporan Riwayat Pergerakan Stok Barang</p>
-        @if($filterBulan)
-            <p>Periode: {{ \Carbon\Carbon::parse($filterBulan)->translatedFormat('F Y') }}</p>
+        @if($tanggal_awal)
+            <p>Periode: {{ \Carbon\Carbon::parse($tanggal_awal)->translatedFormat('d F Y') }} - {{ \Carbon\Carbon::parse($tanggal_akhir)->translatedFormat('d F Y') }}</p>
         @endif
         <p style="font-size: 10px; text-align: right;">Dicetak pada: {{ now()->translatedFormat('d F Y, H:i') }}</p>
     </div>

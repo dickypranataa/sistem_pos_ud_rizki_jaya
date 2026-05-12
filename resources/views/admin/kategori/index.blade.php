@@ -11,7 +11,8 @@
 
     <div class="flex justify-end mb-4">
         <form action="{{ route('admin.kategori.index') }}" method="GET" class="flex gap-2">
-            <input type="text" name="search" placeholder="Cari kategori..." value="{{ request('search') }}" class="border border-gray-300 rounded px-3 py-2">
+            <input type="text" name="search" placeholder="Cari kategori..." value="{{ request('search') }}"
+                class="border border-gray-300 rounded px-3 py-2">
             <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Cari</button>
         </form>
     </div>
@@ -31,12 +32,15 @@
                         <td class="px-6 py-4">{{ $loop->iteration + $kategoris->firstItem() - 1 }}</td>
                         <td class="px-6 py-4">{{ $kategori->nama_kategori }}</td>
                         <td class="px-6 py-4">
-                            <button onclick="openEditModal({{ $kategori->id }}, '{{ addslashes($kategori->nama_kategori) }}')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Edit</button>
-                            
-                            <form action="{{ route('admin.kategori.destroy', $kategori->id) }}" method="POST" style="display: inline;">
+                            <button onclick="openEditModal({{ $kategori->id }}, '{{ addslashes($kategori->nama_kategori) }}')"
+                                class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Edit</button>
+
+                            <form action="{{ route('admin.kategori.destroy', $kategori->id) }}" method="POST"
+                                style="display: inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded" onclick="return confirm('Hapus kategori ini?')">Hapus</button>
+                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+                                    onclick="return confirm('Hapus kategori ini?')">Hapus</button>
                             </form>
                         </td>
                     </tr>
@@ -57,10 +61,15 @@
                 @csrf
                 <div class="mb-4">
                     <label for="nama_kategori" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
-                    <input type="text" name="nama_kategori" id="add_nama_kategori" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <input type="text" name="nama_kategori" id="add_nama_kategori" required
+                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    @error('nama_kategori')
+                        <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded mr-2" onclick="closeModal()">Batal</button>
+                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded mr-2"
+                        onclick="closeModal()">Batal</button>
                     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Tambah</button>
                 </div>
             </form>
@@ -71,16 +80,18 @@
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50" id="editModal">
         <div class="bg-white p-6 rounded-lg w-full max-w-md">
             <h2 class="text-lg font-medium mb-4">Edit Kategori</h2>
-            
+
             <form id="editForm" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="mb-4">
                     <label for="edit_nama_kategori" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
-                    <input type="text" name="nama_kategori" id="edit_nama_kategori" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <input type="text" name="nama_kategori" id="edit_nama_kategori" required
+                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded mr-2" onclick="closeEditModal()">Batal</button>
+                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded mr-2"
+                        onclick="closeEditModal()">Batal</button>
                     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Update</button>
                 </div>
             </form>
@@ -102,10 +113,10 @@
         function openEditModal(id, nama) {
             // 1. Tampilkan modal
             document.getElementById('editModal').classList.remove('hidden');
-            
+
             // 2. Isi kotak input dengan nama kategori yang diklik
             document.getElementById('edit_nama_kategori').value = nama;
-            
+
             // 3. Ubah URL form "action" agar menuju ID yang benar
             let url = "{{ route('admin.kategori.update', ':id') }}";
             url = url.replace(':id', id);

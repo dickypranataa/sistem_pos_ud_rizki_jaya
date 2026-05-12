@@ -57,6 +57,7 @@ Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function
     Route::get('/transaksi/{id}/cetak', [KasirController::class, 'cetakStruk'])->name('transaksi.cetak');
 
     //riwayat
+    Route::get('riwayat/export', [RiwayatTransaksi::class, 'export'])->name('riwayat.export');
     Route::get('riwayat', [RiwayatTransaksi::class, 'index'])->name('riwayat.index');
     Route::get('riwayat/{id}', [RiwayatTransaksi::class, 'show'])->name('riwayat.show');
     Route::get('riwayat/{id}/cetak', [RiwayatTransaksi::class, 'cetakStruk'])->name('riwayat.cetak');

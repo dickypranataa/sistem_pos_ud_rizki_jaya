@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
+use Illuminate\Support\Facades\Storage; // WAJIB TAMBAH INI DI ATAS
 
 class ProdukController extends Controller
 {
-    //
     public function index(){
         $search = request('search');
         $produks = Produk::query()->where('nama_produk', 'like', "%{$search}%")
@@ -17,7 +17,6 @@ class ProdukController extends Controller
                       ->latest()
                       ->paginate(10)
                       ->withQueryString();
-
 
         return view('admin.produk.index', compact('produks'));
     }
@@ -44,7 +43,6 @@ class ProdukController extends Controller
 
         $data = $request->all();
 
-        //validasi gambar
         if($request->hasFile('gambar')){
             $data['gambar'] = $request->file('gambar')->store('produk','public');
         }
@@ -74,22 +72,34 @@ class ProdukController extends Controller
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $produk = Produk::find($id); // Temukan produk dulu
         $data = $request->all();
 
-        //validasi gambar
+        // JIKA ADA GAMBAR BARU YANG DIUNGGAH
         if($request->hasFile('gambar')){
+            // 1. Hapus gambar lama dari server (jika ada)
+            if ($produk->gambar && Storage::disk('public')->exists($produk->gambar)) {
+                Storage::disk('public')->delete($produk->gambar);
+            }
+            // 2. Simpan gambar baru
             $data['gambar'] = $request->file('gambar')->store('produk','public');
         }
 
-        Produk::find($id)->update($data);
+        $produk->update($data);
 
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil diupdate');
     }
 
     public function destroy($id){
-        Produk::find($id)->delete();
+        $produk = Produk::find($id);
+        
+        // HAPUS GAMBAR FISIK SAAT PRODUK DIHAPUS
+        if ($produk->gambar && Storage::disk('public')->exists($produk->gambar)) {
+            Storage::disk('public')->delete($produk->gambar);
+        }
+
+        $produk->delete();
+        
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus');
     }
-
-
 }

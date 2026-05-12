@@ -14,7 +14,7 @@
 
             <div class="bg-white p-6 shadow-sm sm:rounded-xl border border-gray-100">
                 <form method="GET" action="{{ route('admin.riwayat.index') }}"
-                    class="flex flex-col md:flex-row gap-4 items-end">
+                    class="flex flex-col md:flex-row gap-4 items-start"> <!-- Ubah items-end jadi items-start agar error text rapi -->
 
                     <div class="w-full md:w-1/3">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Cari Produk</label>
@@ -26,15 +26,19 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Dari Tanggal</label>
                         <input type="date" name="tanggal_awal" value="{{ request('tanggal_awal') }}"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm text-sm">
+                        <!-- TAMBAHKAN INI -->
+                        @error('tanggal_awal') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="w-full md:w-1/4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Sampai Tanggal</label>
                         <input type="date" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm text-sm">
+                        <!-- TAMBAHKAN INI -->
+                        @error('tanggal_akhir') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="w-full md:w-auto flex gap-2">
+                    <div class="w-full md:w-auto flex gap-2 mt-6"> <!-- Tambah mt-6 agar sejajar dengan input -->
                         <button type="submit"
                             class="inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 transition shadow-sm">
                             Filter
@@ -53,7 +57,6 @@
                             Export PDF
                         </a>
                     </div>
-
                 </form>
             </div>
 

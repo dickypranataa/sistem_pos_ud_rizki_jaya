@@ -97,12 +97,28 @@ class KasirTransaksi extends Component
         $this->total_harga = 0;
 
         foreach ($this->keranjang as $key => $item) {
-            // Update harga jika kasir tiba-tiba mengganti Tipe Harga di tengah jalan
-            $produk = Produk::find($item['produk_id']);
-            $this->keranjang[$key]['harga'] = $this->getHargaAktif($produk);
+            // 1. Casting tipe data menjadi Integer agar tidak terjadi error (string * string)
+            $qty = (int) $item['qty'];
 
-            // Hitung subtotal per baris
-            $this->total_harga += $this->keranjang[$key]['harga'] * $item['qty'];
+            // 2. Validasi input manual: Jika kasir mengetik angka melebihi stok asli
+            if ($qty > $item['stok_asli']) {
+                $qty = (int) $item['stok_asli']; // Kembalikan nilai ke stok maksimal
+                $this->keranjang[$key]['qty'] = $qty; // Update tampilan di keranjang
+                session()->flash('error', 'Stok terbatas! Maksimal pembelian ' . $item['nama'] . ' adalah ' . $qty);
+            } 
+            // Validasi input manual: Jika input dikosongkan atau diisi minus
+            elseif (empty($item['qty']) || $qty < 1) {
+                $qty = 1;
+                $this->keranjang[$key]['qty'] = $qty;
+            }
+
+            // 3. Update harga jika kasir mengganti Tipe Harga di tengah jalan
+            $produk = Produk::find($item['produk_id']);
+            $hargaAktif = (int) $this->getHargaAktif($produk); // Casting ke Integer
+            $this->keranjang[$key]['harga'] = $hargaAktif;
+
+            // 4. Hitung subtotal per baris
+            $this->total_harga += $hargaAktif * $qty;
         }
 
         // Hitung kembalian secara real-time
@@ -213,7 +229,12 @@ class KasirTransaksi extends Component
 
         // 6. PERINTAH AJAIB: Memicu browser untuk membuka tab struk
         $this->dispatch('buka-struk', url: $urlStruk);
+
+        // 7. Refresh halaman setelah delay 1.5 detik agar pesan sukses sempat terbaca
+        // dan tab struk punya waktu untuk terbuka lebih dulu.
+        $this->js('setTimeout(() => { window.location.reload(); }, 1500);');
     }
+
 
     public function render()
     {

@@ -36,6 +36,7 @@
     <div class="mb-4">
         <label for="sku" class="block text-gray-700 font-bold mb-2">SKU</label>
         <input type="text" name="sku" id="sku" value="{{ old('sku', $produks->sku) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        @error('sku') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
     </div>
     
     <div class="mb-4">
@@ -91,6 +92,19 @@
 </form>
 
 <script>
+    // 1. Inisialisasi Tom Select untuk pencarian kategori
+    document.addEventListener("DOMContentLoaded", function() {
+        new TomSelect("#kategori_id", {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            },
+            placeholder: "Ketik untuk mencari kategori..."
+        });
+    });
+
+    // 2. Fungsi Preview Image (Bawaan asli Mas Dicky)
     function previewImage() {
         const image = document.querySelector('#gambar');
         const imgPreview = document.querySelector('.img-preview');
@@ -98,7 +112,7 @@
 
         imgPreview.style.display = 'block';
         imgPreview.classList.remove('hidden');
-        placeholder.style.display = 'none';
+        if(placeholder) placeholder.style.display = 'none';
 
         const oFReader = new FileReader();
         oFReader.readAsDataURL(image.files[0]);
