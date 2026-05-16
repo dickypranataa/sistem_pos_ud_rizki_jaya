@@ -6,6 +6,7 @@ use App\Models\Kategori;
 use App\Models\Produk;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ProductSeeder extends Seeder
 {
@@ -39,45 +40,79 @@ class ProductSeeder extends Seeder
                 if (empty($categoryName)) $categoryName = 'UMUM';
                 $category = Kategori::firstOrCreate(['nama_kategori' => $categoryName]);
 
-                // 2. Satuan
+                // ==========================================
+                // 2. LOGIKA GAMBAR (KATA KUNCI & NULLABLE)
+                // ==========================================
+                $lowerCategory = strtolower($categoryName);
+                $imagePath = null; // Default kosong (NULL)
+
+                // Daftar mapping kata kunci kategori -> nama file foto
+                $imageMap = [
+                    'slang'     => 'slang.jpg',
+                    'difuser'   => 'difuser.jpg',
+                    'diamond'   => 'diamondwheelbosh.jpg',
+                    'dcota'     => 'dcota.jpg',
+                    'corong'    => 'corongtalanghitam.jpg',
+                    'pilok'     => 'catpilok.jpg',
+                    'avian'     => 'catavian.jpg',
+                    'casing'    => 'casingcover.jpg',
+                    'bearing'   => 'bearing.jpg',
+                    'baud'      => 'baud.jpg',
+                ];
+
+                // Pencocokan kata kunci
+                foreach ($imageMap as $keyword => $filename) {
+                    if (str_contains($lowerCategory, $keyword)) {
+                        $imagePath = 'storage/produk/' . $filename;
+                        break;
+                    }
+                }
+
+                // Pencocokan nama persis (jika file diunggah belakangan)
+                if ($imagePath === null) {
+                    $cleanImageName = preg_replace('/[^a-z0-9]/', '', $lowerCategory);
+                    $potentialFile = 'storage/produk/' . $cleanImageName . '.jpg';
+                    
+                    if (File::exists(public_path($potentialFile))) {
+                        $imagePath = $potentialFile;
+                    }
+                }
+                // ==========================================
+
+                // 3. Satuan
                 $unit = $this->cleanUnit($row[3] ?? 'Pcs');
 
-                // 3. Ambil Angka Mentah dari CSV
-                $rawPurchasePrice = $this->parseNumber($row[4] ?? 0); // Harga Beli (6200)
-                $discountPercent  = $this->parseNumber($row[5] ?? 0); // Diskon (15)
-                $priceRetail      = $this->parseNumber($row[7] ?? 0); // Jual (6500)
+                // 4. Ambil Angka Mentah dari CSV
+                $rawPurchasePrice = $this->parseNumber($row[4] ?? 0); 
+                $discountPercent  = $this->parseNumber($row[5] ?? 0); 
+                $priceRetail      = $this->parseNumber($row[7] ?? 0); 
 
-                // --- LOGIKA PERBAIKAN HARGA ---
+                // --- LOGIKA PERBAIKAN HARGA (SELISIH 2000) ---
 
                 // A. Hitung Modal BERSIH (Netto)
-                // Rumus: Harga Beli - (Harga Beli * Diskon%)
-                // Contoh: 6200 - (6200 * 15%) = 5270
-                if ($discountPercent > 100) $discountPercent = 0; // Jaga-jaga error input
+                if ($discountPercent > 100) $discountPercent = 0; 
                 $netPurchasePrice = $rawPurchasePrice - ($rawPurchasePrice * ($discountPercent / 100));
                 
-                // Failsafe: Jika hasil minus/nol, pakai harga beli awal
                 if ($netPurchasePrice <= 100) $netPurchasePrice = $rawPurchasePrice;
 
                 // B. Tentukan Harga Jual Retail (Ecer)
-                // Jika kosong/0 di Excel, set otomatis untung 30% dari modal
                 if ($priceRetail <= $netPurchasePrice) {
                     $priceRetail = $netPurchasePrice * 1.30;
                 }
 
-                // C. Hitung Target Harga Grosir (Misal diskon 10% dari Ecer)
-                $priceWholesale = $priceRetail * 0.90; 
-                $priceSemi      = $priceRetail * 0.95;
+                // C. Terapkan Selisih Rp 2.000 antar level
+                $priceSemi      = $priceRetail - 2000;
+                $priceWholesale = $priceSemi - 2000;
 
                 // D. PROTEKSI ANTI RUGI (WAJIB ADA)
-                // Pastikan Grosir minimal untung 5% dari Modal Bersih
-                $minProfitMargin = 1.05; // 5% Margin
+                $minProfitMargin = 1.05; // Minimal untung 5%
                 $minWholesalePrice = $netPurchasePrice * $minProfitMargin;
 
                 if ($priceWholesale < $minWholesalePrice) {
-                    // Jika harga grosir ternyata rugi (di bawah modal + 5%), NAIKKAN!
-                    $priceWholesale = $minWholesalePrice;       // Set Grosir = Modal + 5%
-                    $priceSemi      = $priceWholesale * 1.05;   // Set Semi   = Grosir + 5%
-                    $priceRetail    = $priceSemi * 1.05;        // Set Retail = Semi + 5%
+                    // Jika dikurangi 4000 ternyata rugi, kita naikkan dari bawah
+                    $priceWholesale = $minWholesalePrice;       // Grosir diset ke Modal + 5%
+                    $priceSemi      = $priceWholesale + 2000;   // Semi Grosir naik 2000 dari Grosir
+                    $priceRetail    = $priceSemi + 2000;        // Retail naik 2000 dari Semi Grosir
                 }
 
                 // Simpan
@@ -87,15 +122,16 @@ class ProductSeeder extends Seeder
                     'nama_produk'        => trim($row[2] ?? 'Tanpa Nama'),
                     'satuan'             => $unit,
                     'stok'               => 5, 
-                    'harga_modal'        => $netPurchasePrice, // SIMPAN HARGA BERSIH (5270)
+                    'harga_modal'        => $netPurchasePrice, 
                     'harga_retail'       => $priceRetail,
                     'harga_semi_grosir'  => $priceSemi,
                     'harga_grosir'       => $priceWholesale,
+                    'gambar'             => $imagePath, // Menyimpan lokasi file atau NULL
                 ]);
                 $count++;
             }
             DB::commit();
-            $this->command->info("Berhasil! $count produk diimpor. Hirarki harga telah diperbaiki.");
+            $this->command->info("Berhasil! $count produk diimpor dengan selisih harga Rp2.000 dan mapping gambar dinamis.");
         } catch (\Exception $e) {
             DB::rollBack();
             $this->command->error("Gagal: " . $e->getMessage());
@@ -115,10 +151,8 @@ class ProductSeeder extends Seeder
     private function parseNumber($value)
     {
         if (empty($value)) return 0;
-        // Hapus Rp, spasi, dan karakter aneh
         $clean = preg_replace('/[^0-9,.]/', '', $value);
 
-        // Deteksi format 1.000,00 vs 1,000.00
         if (str_contains($clean, '.') && str_contains($clean, ',')) {
             $lastDot = strrpos($clean, '.');
             $lastComma = strrpos($clean, ',');
@@ -129,7 +163,6 @@ class ProductSeeder extends Seeder
                 $clean = str_replace(',', '', $clean);
             }
         } elseif (str_contains($clean, '.')) {
-            // Jika titik lebih dari satu (1.000.000) atau 3 digit pas (1.500) -> itu ribuan
             if (substr_count($clean, '.') > 1 || strlen(substr(strrchr($clean, '.'), 1)) === 3) {
                 $clean = str_replace('.', '', $clean);
             } 

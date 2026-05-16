@@ -16,15 +16,32 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans text-gray-900 antialiased">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-        <div class="mb-2"> <a href="/">
-                <img src="{{ asset('images/logo_udrj.png') }}" alt="Logo UD Rizki Jaya"
-                    class="w-16 h-16 object-contain" /> </a>
-        </div>
+<body class="font-sans antialiased">
+    <div class="min-h-screen flex items-center justify-center relative overflow-hidden bg-blue-600">
 
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-            {{ $slot }}
+        <!-- Decorative Blur Circle -->
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
+
+        <div
+            class="relative w-full max-w-5xl mx-4 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+
+            <!-- Left Side (Branding - Desktop Only) -->
+            <div
+                class="hidden md:flex flex-col justify-center items-center text-white p-12 bg-white/10 backdrop-blur-xl">
+                <img src="{{ asset('images/logo_udrj.png') }}" class="w-24 mb-6 drop-shadow-lg">
+                <h1 class="text-3xl font-bold mb-3">UD Rizki Jaya</h1>
+                <p class="text-white/80 text-center text-sm leading-relaxed">
+                    Sistem POS modern untuk manajemen penjualan,
+                    stok barang, dan laporan transaksi secara real-time.
+                </p>
+            </div>
+
+            <!-- Right Side (Form) -->
+            <div class="bg-white p-8 md:p-12">
+                {{ $slot }}
+            </div>
+
         </div>
     </div>
 </body>

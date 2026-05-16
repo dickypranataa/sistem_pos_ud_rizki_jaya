@@ -2,13 +2,13 @@
 
 @section('content')
 
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
     <div>
-        <h2 class="text-2xl font-bold text-gray-800">Metode Pembayaran</h2>
-        <p class="text-sm text-gray-500 mt-1">Kelola metode pembayaran yang tersedia di kasir.</p>
+        <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Metode Pembayaran</h2>
+        <p class="text-sm text-gray-400 mt-1 font-medium">Kelola metode pembayaran yang tersedia di kasir.</p>
     </div>
     <button onclick="openModal()"
-        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl font-semibold text-sm shadow-sm transition">
+        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white py-2.5 px-5 rounded-2xl font-semibold text-sm shadow-md shadow-blue-200 transition-all duration-200 hover:-translate-y-0.5">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
@@ -18,17 +18,17 @@
 
 {{-- Search --}}
 <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-5">
-    <form action="{{ route('admin.pembayaran.index') }}" method="GET" class="flex gap-2">
+    <form action="{{ route('admin.pembayaran.index') }}" method="GET" class="flex gap-2.5">
         <div class="relative flex-1">
-            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             <input type="text" name="search" placeholder="Cari metode pembayaran..." value="{{ request('search') }}"
-                class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                class="w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white placeholder-gray-400 transition-all duration-200">
         </div>
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-semibold transition">Cari</button>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white py-2.5 px-5 rounded-xl text-sm font-semibold transition-all duration-200">Cari</button>
         @if(request('search'))
-            <a href="{{ route('admin.pembayaran.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-4 rounded-lg text-sm font-semibold transition">Reset</a>
+            <a href="{{ route('admin.pembayaran.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200">Reset</a>
         @endif
     </form>
 </div>
@@ -38,30 +38,30 @@
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
             <thead>
-                <tr class="bg-blue-50 border-b border-blue-100">
-                    <th class="px-6 py-4 font-semibold text-blue-700 text-xs uppercase tracking-wider">No</th>
-                    <th class="px-6 py-4 font-semibold text-blue-700 text-xs uppercase tracking-wider">Nama Pembayaran</th>
-                    <th class="px-6 py-4 font-semibold text-blue-700 text-xs uppercase tracking-wider">Aksi</th>
+                <tr class="bg-gray-50 border-b border-gray-100">
+                    <th class="px-6 py-4 font-semibold text-gray-500 text-xs uppercase tracking-wider">No</th>
+                    <th class="px-6 py-4 font-semibold text-gray-500 text-xs uppercase tracking-wider">Nama Pembayaran</th>
+                    <th class="px-6 py-4 font-semibold text-gray-500 text-xs uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
                 @foreach ($pembayarans as $pembayaran)
-                <tr class="hover:bg-gray-50/60 transition">
-                    <td class="px-6 py-4 text-gray-400">{{ $loop->iteration + $pembayarans->firstItem() - 1 }}</td>
+                <tr class="hover:bg-slate-50/70 transition-colors duration-150">
+                    <td class="px-6 py-4 text-gray-400 font-medium">{{ $loop->iteration + $pembayarans->firstItem() - 1 }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                 </svg>
                             </div>
-                            <span class="font-medium text-gray-900">{{ $pembayaran->nama_pembayaran }}</span>
+                            <span class="font-semibold text-gray-900">{{ $pembayaran->nama_pembayaran }}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
                             <button onclick="openEditModal({{ $pembayaran->id }}, '{{ addslashes($pembayaran->nama_pembayaran) }}')"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition">
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 text-xs font-semibold rounded-lg transition-all duration-150">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
@@ -71,7 +71,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" onclick="return confirm('Hapus pembayaran ini?')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold rounded-lg transition">
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 active:scale-95 text-red-700 text-xs font-semibold rounded-lg transition-all duration-150">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
@@ -91,12 +91,19 @@
 </div>
 
 {{-- Modal Tambah --}}
-<div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50" id="modal">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4">
-        <div class="flex items-center justify-between p-6 border-b border-gray-100">
-            <h2 class="text-lg font-bold text-gray-800">Tambah Metode Pembayaran</h2>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4" id="modal">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </div>
+                <h2 class="text-base font-bold text-gray-900">Tambah Metode Pembayaran</h2>
+            </div>
+            <button onclick="closeModal()" class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors duration-150 active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
@@ -104,28 +111,35 @@
         <form action="{{ route('admin.pembayaran.store') }}" method="POST" class="p-6">
             @csrf
             <div class="mb-5">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Pembayaran</label>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nama Pembayaran</label>
                 <input type="text" name="nama_pembayaran" id="add_nama_pembayaran" required
-                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
                     placeholder="Contoh: Tunai, Transfer BCA...">
             </div>
-            <div class="flex justify-end gap-2">
+            <div class="flex justify-end gap-2.5">
                 <button type="button" onclick="closeModal()"
-                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition">Batal</button>
+                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-700 text-sm font-semibold rounded-xl transition-all duration-150">Batal</button>
                 <button type="submit"
-                    class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition">Simpan</button>
+                    class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold rounded-xl transition-all duration-150 shadow-md shadow-blue-200">Simpan</button>
             </div>
         </form>
     </div>
 </div>
 
 {{-- Modal Edit --}}
-<div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50" id="editModal">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4">
-        <div class="flex items-center justify-between p-6 border-b border-gray-100">
-            <h2 class="text-lg font-bold text-gray-800">Edit Metode Pembayaran</h2>
-            <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4" id="editModal">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                </div>
+                <h2 class="text-base font-bold text-gray-900">Edit Metode Pembayaran</h2>
+            </div>
+            <button onclick="closeEditModal()" class="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors duration-150 active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
@@ -134,15 +148,15 @@
             @csrf
             @method('PUT')
             <div class="mb-5">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Pembayaran</label>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nama Pembayaran</label>
                 <input type="text" name="nama_pembayaran" id="edit_nama_pembayaran" required
-                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200">
             </div>
-            <div class="flex justify-end gap-2">
+            <div class="flex justify-end gap-2.5">
                 <button type="button" onclick="closeEditModal()"
-                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition">Batal</button>
+                    class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-700 text-sm font-semibold rounded-xl transition-all duration-150">Batal</button>
                 <button type="submit"
-                    class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition">Update</button>
+                    class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold rounded-xl transition-all duration-150 shadow-md shadow-blue-200">Update</button>
             </div>
         </form>
     </div>
