@@ -162,7 +162,7 @@ class AsistenAiController extends Controller
         }
         // Daftar model
         $daftarModel = [
-            'gemini-3.1-flash-lite', // Kuota paling besar (500 RPD)
+            'gemini-3.1-flash-lite', // Kuota 500 RPD
             'gemini-2.5-flash',      // Kuota 20 RPD
             'gemini-2.5-flash-lite', // Kuota 20 RPD
             'gemini-3-flash'         // Kuota 20 RPD

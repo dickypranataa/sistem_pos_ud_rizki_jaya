@@ -11,6 +11,7 @@ use App\Models\RiwayatStok;
 use App\Models\User;
 use App\Notifications\StokNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 
@@ -96,33 +97,37 @@ class KasirTransaksi extends Component
     {
         $this->total_harga = 0;
 
-        foreach ($this->keranjang as $key => $item) {
-            // 1. Casting tipe data menjadi Integer agar tidak terjadi error (string * string)
-            $qty = (int) $item['qty'];
+        if (!empty($this->keranjang)) {
+            $productIds = collect($this->keranjang)->pluck('produk_id')->toArray();
+            $dbProduks = Produk::whereIn('id', $productIds)->get()->keyBy('id');
 
-            // 2. Validasi input manual: Jika kasir mengetik angka melebihi stok asli
-            if ($qty > $item['stok_asli']) {
-                $qty = (int) $item['stok_asli']; // Kembalikan nilai ke stok maksimal
-                $this->keranjang[$key]['qty'] = $qty; // Update tampilan di keranjang
-                session()->flash('error', 'Stok terbatas! Maksimal pembelian ' . $item['nama'] . ' adalah ' . $qty);
-            } 
-            // Validasi input manual: Jika input dikosongkan atau diisi minus
-            elseif (empty($item['qty']) || $qty < 1) {
-                $qty = 1;
-                $this->keranjang[$key]['qty'] = $qty;
+            foreach ($this->keranjang as $key => $item) {
+                $qty = (int) $item['qty'];
+
+                if ($qty > $item['stok_asli']) {
+                    $qty = (int) $item['stok_asli'];
+                    $this->keranjang[$key]['qty'] = $qty;
+                    session()->flash('error', 'Stok terbatas! Maksimal pembelian ' . $item['nama'] . ' adalah ' . $qty);
+                } elseif (empty($item['qty']) || $qty < 1) {
+                    $qty = 1;
+                    $this->keranjang[$key]['qty'] = $qty;
+                }
+
+                // Ambil dari memori (Collection), BUKAN query ke database lagi
+                $produk = $dbProduks->get($item['produk_id']);
+
+                if ($produk) {
+                    $hargaAktif = (int) $this->getHargaAktif($produk);
+                    $this->keranjang[$key]['harga'] = $hargaAktif;
+                    $this->total_harga += $hargaAktif * $qty;
+                }
             }
-
-            // 3. Update harga jika kasir mengganti Tipe Harga di tengah jalan
-            $produk = Produk::find($item['produk_id']);
-            $hargaAktif = (int) $this->getHargaAktif($produk); // Casting ke Integer
-            $this->keranjang[$key]['harga'] = $hargaAktif;
-
-            // 4. Hitung subtotal per baris
-            $this->total_harga += $hargaAktif * $qty;
         }
 
         // Hitung kembalian secara real-time
-        $this->kembalian = (int) $this->bayar - $this->total_harga;
+        // Menggunakan str_replace untuk membersihkan titik (jika ada input dari Alpine.js)
+        $bayarBersih = (int) str_replace('.', '', $this->bayar);
+        $this->kembalian = $bayarBersih - $this->total_harga;
     }
 
     //simpan transaksi
@@ -133,117 +138,111 @@ class KasirTransaksi extends Component
             return;
         }
 
-        // FINAL CHECK STOK SEBELUM DISIMPAN KE DATABASE
-        foreach ($this->keranjang as $item) {
-            $cekProduk = Produk::find($item['produk_id']);
+        try {
+            // Gunakan DB Transaction agar aman dari bentrok kasir lain (Race Condition)
+            $transaksiBerhasil = DB::transaction(function () {
 
-            // Jika produk tiba-tiba dihapus admin, atau jumlah beli melebihi stok yang tersisa
-            if (!$cekProduk || $item['qty'] > $cekProduk->stok) {
-                session()->flash('error', '⚠️ Gagal! Stok "' . ($cekProduk->nama_produk ?? 'Barang Dihapus') . '" tidak mencukupi. Sisa stok: ' . ($cekProduk->stok ?? 0));
-                return; // Hentikan seluruh proses, jangan simpan transaksi!
-            }
-        }
+                // Cari transaksi terakhir dan KUNCI baris tersebut saat dibaca
+                $transaksiTerakhir = Transaksi::whereDate('waktu_transaksi', now()->toDateString())
+                    ->lockForUpdate() // <-- Kunci penting agar tidak ada nomor struk ganda
+                    ->orderBy('id', 'desc')
+                    ->first();
 
-        // --- MULAI LOGIKA KODE TRANSAKSI OTOMATIS ---
-        $tanggalHariIni = now()->format('Ymd');
+                $nomorUrutBaru = $transaksiTerakhir ? ((int) substr($transaksiTerakhir->kode_transaksi, -5) + 1) : 1;
+                $kodeTransaksiOtomatis = 'TRX-' . now()->format('Ymd') . '-' . str_pad($nomorUrutBaru, 5, '0', STR_PAD_LEFT);
 
-        // Cari transaksi terakhir di hari ini
-        $transaksiTerakhir = Transaksi::whereDate('waktu_transaksi', now()->toDateString())
-            ->orderBy('id', 'desc')
-            ->first();
+                // Bersihkan nilai bayar dari titik (jika ada input Alpine)
+                $bayarBersih = (int) str_replace('.', '', $this->bayar);
 
-        if ($transaksiTerakhir) {
-            // Jika sudah ada, ambil 5 digit terakhir lalu tambah 1
-            $nomorUrutLama = (int) substr($transaksiTerakhir->kode_transaksi, -5);
-            $nomorUrutBaru = $nomorUrutLama + 1;
-        } else {
-            // Jika ini transaksi pertama hari ini, mulai dari 1
-            $nomorUrutBaru = 1;
-        }
+                // 1. Simpan Induk Transaksi
+                $transaksi = Transaksi::create([
+                    'kode_transaksi' => $kodeTransaksiOtomatis,
+                    'user_id' => auth()->user()->id,
+                    'pembayaran_id' => $this->pembayaran_id,
+                    'tipe_harga' => $this->tipe_harga, // [FIX BUG #1] Simpan tipe harga pelanggan
+                    'total_harga' => $this->total_harga,
+                    'bayar' => $bayarBersih,
+                    'kembalian' => $this->kembalian,
+                    'waktu_transaksi' => now(),
+                ]);
 
-        // Gabungkan menjadi format TRX-YYYYMMDD-XXXXX
-        $kodeTransaksiOtomatis = 'TRX-' . $tanggalHariIni . '-' . str_pad($nomorUrutBaru, 5, '0', STR_PAD_LEFT);
+                // Ambil ulang produk dari Database dan kunci datanya (lockForUpdate)
+                $productIds = collect($this->keranjang)->pluck('produk_id')->toArray();
+                $dbProduks = Produk::whereIn('id', $productIds)->lockForUpdate()->get()->keyBy('id');
 
-        // 1. Simpan Induk Transaksi
-        $transaksi = Transaksi::create([
-            'kode_transaksi' => $kodeTransaksiOtomatis,
-            'user_id' => auth()->user()->id,
-            'pembayaran_id' => $this->pembayaran_id,
-            'total_harga' => $this->total_harga,
-            'bayar' => $this->bayar,
-            'kembalian' => $this->kembalian,
-            'waktu_transaksi' => now(),
-        ]);
+                // 2. Simpan Detail Transaksi & Catat Riwayat Stok
+                foreach ($this->keranjang as $item) {
+                    $produk = $dbProduks->get($item['produk_id']);
 
-        // 2. Simpan Detail Transaksi & Catat Riwayat Stok
-        foreach ($this->keranjang as $item) {
-            DetailTransaksi::create([
-                'transaksi_id' => $transaksi->id,
-                'produk_id' => $item['produk_id'],
-                'jumlah' => $item['qty'],
-                'harga_satuan' => $item['harga'],
-                'subtotal' => $item['harga'] * $item['qty'],
-            ]);
+                    // Jika di tengah jalan tiba-tiba barang dihapus admin atau stok kurang
+                    if (!$produk || $item['qty'] > $produk->stok) {
+                        throw new \Exception('Gagal! Stok "' . ($produk->nama_produk ?? 'Barang') . '" tidak mencukupi.');
+                    }
 
-            // Ambil data produk
-            $produk = Produk::find($item['produk_id']);
-            if ($produk) {
-                $stokSebelumnya = $produk->stok;
+                    // JANGAN pakai $item['harga']. Ambil ulang harga ASLI dari Database!
+                    $hargaAkurat = (int) $this->getHargaAktif($produk);
 
-                // Kurangi stok utama
-                $produk->decrement('stok', $item['qty']);
+                    DetailTransaksi::create([
+                        'transaksi_id' => $transaksi->id,
+                        'produk_id' => $produk->id,
+                        'jumlah' => $item['qty'],
+                        'harga_satuan' => $hargaAkurat, // Aman dari manipulasi hacker
+                        'subtotal' => $hargaAkurat * $item['qty'],
+                    ]);
 
-                $produk->refresh();
+                    // Kurangi stok utama
+                    $produk->decrement('stok', $item['qty']);
 
-                // notifikasi stok
-                $batasMenipis = 2;
-                if ($produk->stok <= $batasMenipis) {
-                    // Ambil semua pengguna dengan role admin
-                    $semuaUser = User::all();
+                    // Notifikasi stok menipis
+                    if ($produk->stok <= 2) {
+                        $semuaUser = User::all();
+                        Notification::send($semuaUser, new StokNotification($produk));
+                    }
 
-                    // Kirim notifikasi ke database semua pengguna
-                    Notification::send($semuaUser, new StokNotification($produk));
+                    // CATAT KE TABEL RIWAYAT STOK
+                    RiwayatStok::create([
+                        'produk_id' => $produk->id,
+                        'user_id' => auth()->user()->id,
+                        'tipe' => 'sale',
+                        'jumlah' => -$item['qty'],
+                        'stok_akhir' => $produk->stok,
+                        'keterangan' => 'Penjualan: ' . $kodeTransaksiOtomatis
+                    ]);
                 }
 
-                // CATAT KE TABEL RIWAYAT STOK
-                RiwayatStok::create([
-                    'produk_id' => $produk->id,
-                    'user_id' => auth()->user()->id, // Kasir yang bertugas
-                    'tipe' => 'sale',
-                    'jumlah' => -$item['qty'], // Minus karena barang keluar
-                    'stok_akhir' => $produk->stok,
-                    'keterangan' => 'Penjualan: ' . $kodeTransaksiOtomatis
-                ]);
-            }
+                // Kembalikan objek transaksi jika DB transaction berhasil
+                return $transaksi;
+            });
+
+            // --- JIKA BERHASIL (Keluar dari blok DB Transaction) ---
+
+            $urlStruk = route('kasir.transaksi.cetak', $transaksiBerhasil->id);
+
+            // Bersihkan Layar
+            $this->reset(['keranjang', 'total_harga', 'bayar', 'kembalian', 'pembayaran_id', 'search', 'tipe_harga']);
+            $this->tipe_harga = 'retail';
+
+            session()->flash('success', 'Transaksi Berhasil! Mencetak struk...');
+
+            $this->dispatch('buka-struk', url: $urlStruk);
+            $this->js('setTimeout(() => { window.location.reload(); }, 1500);');
+
+        } catch (\Exception $e) {
+            // Jika ada error (stok habis, db mati, dll), batalkan SEMUA penyimpanan dan tampilkan error
+            session()->flash('error', $e->getMessage());
         }
-
-        // 3. Simpan URL struk sebelum keranjang dibersihkan
-        $urlStruk = route('kasir.transaksi.cetak', $transaksi->id);
-
-        // 4. Bersihkan Layar
-        $this->reset(['keranjang', 'total_harga', 'bayar', 'kembalian', 'pembayaran_id', 'search', 'tipe_harga']);
-        $this->tipe_harga = 'retail';
-
-        // 5. Tampilkan Pesan Sukses
-        session()->flash('success', 'Transaksi Berhasil! Mencetak struk...');
-
-        // 6. PERINTAH AJAIB: Memicu browser untuk membuka tab struk
-        $this->dispatch('buka-struk', url: $urlStruk);
-
-        // 7. Refresh halaman setelah delay 1.5 detik agar pesan sukses sempat terbaca
-        // dan tab struk punya waktu untuk terbuka lebih dulu.
-        $this->js('setTimeout(() => { window.location.reload(); }, 1500);');
     }
 
 
     public function render()
     {
-        $produks = Produk::where('nama_produk', 'like', '%' . $this->search . '%')
+        // Tambahkan with('kategori') agar query lebih ringan
+        $produks = Produk::with('kategori')
+            ->where('nama_produk', 'like', '%' . $this->search . '%')
             ->orWhere('sku', 'like', '%' . $this->search . '%')
             ->latest()
             ->limit(12)
             ->get();
-
 
         $metodePembayaran = Pembayaran::all();
 
