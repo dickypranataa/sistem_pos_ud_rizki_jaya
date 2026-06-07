@@ -96,21 +96,38 @@ class KasirTransaksi extends Component
     public function hitungTotal()
     {
         $this->total_harga = 0;
+        $itemsToRemoval = [];
 
         if (!empty($this->keranjang)) {
             $productIds = collect($this->keranjang)->pluck('produk_id')->toArray();
             $dbProduks = Produk::whereIn('id', $productIds)->get()->keyBy('id');
 
             foreach ($this->keranjang as $key => $item) {
-                $qty = (int) $item['qty'];
+                $qty = $item['qty'];
 
-                if ($qty > $item['stok_asli']) {
-                    $qty = (int) $item['stok_asli'];
-                    $this->keranjang[$key]['qty'] = $qty;
-                    session()->flash('error', 'Stok terbatas! Maksimal pembelian ' . $item['nama'] . ' adalah ' . $qty);
-                } elseif (empty($item['qty']) || $qty < 1) {
-                    $qty = 1;
-                    $this->keranjang[$key]['qty'] = $qty;
+                // 1. Jika qty diubah menjadi 0 atau '0', tandai untuk dihapus dari keranjang secara otomatis
+                if ($qty === 0 || $qty === '0') {
+                    $itemsToRemoval[] = $key;
+                    continue;
+                }
+
+                $qtyInt = (int)$qty;
+
+                // 2. Jika input kosong (null atau ""), default ke 1
+                if ($qty === null || $qty === '') {
+                    $qtyInt = 1;
+                    $this->keranjang[$key]['qty'] = 1;
+                }
+                // 3. Jika bernilai negatif (kurang dari 0), tampilkan error tapi biarkan nilai tetap minus agar kasir tahu
+                elseif ($qtyInt < 0) {
+                    $this->keranjang[$key]['qty'] = $qtyInt; // tetap pertahankan nilai negatif di input
+                    session()->flash('error', 'Jumlah barang untuk "' . $item['nama'] . '" tidak boleh minus!');
+                }
+                // 4. Jika melebihi stok asli
+                elseif ($qtyInt > $item['stok_asli']) {
+                    $qtyInt = (int)$item['stok_asli'];
+                    $this->keranjang[$key]['qty'] = $qtyInt;
+                    session()->flash('error', 'Stok terbatas! Maksimal pembelian ' . $item['nama'] . ' adalah ' . $qtyInt);
                 }
 
                 // Ambil dari memori (Collection), BUKAN query ke database lagi
@@ -119,8 +136,20 @@ class KasirTransaksi extends Component
                 if ($produk) {
                     $hargaAktif = (int) $this->getHargaAktif($produk);
                     $this->keranjang[$key]['harga'] = $hargaAktif;
-                    $this->total_harga += $hargaAktif * $qty;
+                    
+                    // Hanya tambahkan ke total jika qty positif
+                    if ($qtyInt > 0) {
+                        $this->total_harga += $hargaAktif * $qtyInt;
+                    }
                 }
+            }
+
+            // Hapus item yang qty-nya 0
+            if (!empty($itemsToRemoval)) {
+                foreach ($itemsToRemoval as $key) {
+                    unset($this->keranjang[$key]);
+                }
+                $this->keranjang = array_values($this->keranjang); // Reset indeks array agar berurutan
             }
         }
 
@@ -133,6 +162,14 @@ class KasirTransaksi extends Component
     //simpan transaksi
     public function simpanTransaksi()
     {
+        // Validasi jika ada item minus/tidak valid di keranjang
+        foreach ($this->keranjang as $item) {
+            if ((int)$item['qty'] < 1) {
+                session()->flash('error', 'Gagal memproses transaksi! Terdapat barang dengan jumlah tidak valid (kurang dari 1).');
+                return;
+            }
+        }
+
         if ($this->total_harga == 0 || $this->kembalian < 0 || empty($this->pembayaran_id)) {
             session()->flash('error', 'Data transaksi belum lengkap!');
             return;
@@ -233,6 +270,11 @@ class KasirTransaksi extends Component
         }
     }
 
+    // Cek apakah ada barang di keranjang yang memiliki jumlah tidak valid (kurang dari 1)
+    public function hasInvalidQty()
+    {
+        return collect($this->keranjang)->contains(fn($item) => (int)$item['qty'] < 1);
+    }
 
     public function render()
     {
@@ -253,6 +295,7 @@ class KasirTransaksi extends Component
                     'hideSidebar' => true,
                     'hideNavbar' => true,
                     'hideFooter' => true,
+                    'isFullScreen' => true,
                 ]);
     }
 }

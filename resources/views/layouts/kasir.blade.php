@@ -32,7 +32,7 @@
                 @include('components.kasir.navbar')
             @endif
 
-            <main class="flex-1 p-6 overflow-y-auto">
+            <main class="flex-1 {{ (isset($isFullScreen) && $isFullScreen) ? 'p-0' : 'p-6' }} overflow-y-auto">
                 @if (session('success'))
                     <div
                         class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-sm">

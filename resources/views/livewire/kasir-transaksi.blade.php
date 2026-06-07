@@ -1,4 +1,4 @@
-<div class="flex flex-col lg:flex-row h-[calc(100vh-64px)] w-full bg-slate-50">
+<div class="flex flex-col lg:flex-row h-screen w-full bg-slate-50">
 
     {{-- Katalog Produk --}}
     <div class="w-full lg:w-2/3 flex flex-col p-4 sm:p-5 lg:border-r border-gray-100 bg-white">
@@ -204,13 +204,15 @@
                 <div>
                     <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Metode
                         Pembayaran</label>
-                    <select wire:model="pembayaran_id"
+                    <select id="select-pembayaran"
+                        onchange="pilihanMetode(this.value)"
                         class="w-full py-2.5 pl-3 pr-8 text-sm border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white font-medium text-gray-700 transition-all duration-200">
                         <option value="">-- Pilih Metode --</option>
                         @foreach ($metodePembayaran as $metode)
-                            <option value="{{ $metode->id }}">{{ $metode->nama_pembayaran }}</option>
+                            <option value="{{ $metode->id }}" {{ $pembayaran_id == $metode->id ? 'selected' : '' }}>{{ $metode->nama_pembayaran }}</option>
                         @endforeach
                     </select>
+                    <input type="hidden" wire:model="pembayaran_id" id="hidden-pembayaran">
                 </div>
 
                 <div>
@@ -220,8 +222,14 @@
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <span class="text-gray-400 text-sm font-bold">Rp</span>
                         </div>
-                        <input type="number" wire:model.live.debounce.500ms="bayar" placeholder="0"
+                        {{-- Input tampilan dengan format titik ribuan --}}
+                        <input type="text" id="bayar-display"
+                            oninput="formatUang(this)"
+                            placeholder="0"
+                            autocomplete="off"
                             class="w-full pl-11 pr-3 py-2.5 text-sm border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-bold bg-white transition-all duration-200">
+                        {{-- Input tersembunyi untuk Livewire binding --}}
+                        <input type="hidden" wire:model.live.debounce.300ms="bayar" id="bayar-hidden">
                     </div>
                 </div>
             </div>
@@ -233,8 +241,8 @@
                 <span class="text-lg font-extrabold">Rp {{ number_format($kembalian, 0, ',', '.') }}</span>
             </div>
 
-            <button wire:click="simpanTransaksi" wire:loading.attr="disabled" {{ $total_harga == 0 || $kembalian < 0 || empty($pembayaran_id) ? 'disabled' : '' }} class="w-full py-3.5 px-4 rounded-2xl text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98]
-                    {{ $total_harga == 0 || $kembalian < 0 || empty($pembayaran_id)
+            <button wire:click="simpanTransaksi" wire:loading.attr="disabled" {{ $total_harga == 0 || $kembalian < 0 || empty($pembayaran_id) || $this->hasInvalidQty() ? 'disabled' : '' }} class="w-full py-3.5 px-4 rounded-2xl text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98]
+                    {{ $total_harga == 0 || $kembalian < 0 || empty($pembayaran_id) || $this->hasInvalidQty()
     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
     : 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 hover:-translate-y-0.5' }}">
                 <span wire:loading.remove wire:target="simpanTransaksi" class="flex items-center justify-center gap-2">
@@ -259,9 +267,37 @@
     </div>
 
     <script>
+        // Format angka dengan pemisah titik ribuan
+        function formatUang(el) {
+            let clean = el.value.replace(/\D/g, '');
+            el.value = clean === '' ? '' : clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            // Kirim nilai bersih (tanpa titik) ke hidden input Livewire
+            let hidden = document.getElementById('bayar-hidden');
+            hidden.value = clean;
+            hidden.dispatchEvent(new Event('input'));
+        }
+
+        // Kirim pilihan metode pembayaran langsung ke Livewire
+        function pilihanMetode(val) {
+            let hidden = document.getElementById('hidden-pembayaran');
+            hidden.value = val;
+            hidden.dispatchEvent(new Event('input'));
+            // Paksa Livewire request segera tanpa debounce
+            setTimeout(() => Livewire.all()[0]?.commit(), 50);
+        }
+
         document.addEventListener('livewire:initialized', () => {
             @this.on('buka-struk', (event) => {
                 window.open(event.url, '_blank', 'width=400,height=600,toolbar=no,scrollbars=yes,resizable=yes');
+            });
+
+            // Reset tampilan form setelah transaksi berhasil
+            @this.on('livewire:update', () => {
+                let display = document.getElementById('bayar-display');
+                let hidden = document.getElementById('bayar-hidden');
+                if (display && hidden && hidden.value === '' && @this.bayar == 0) {
+                    display.value = '';
+                }
             });
         });
     </script>
