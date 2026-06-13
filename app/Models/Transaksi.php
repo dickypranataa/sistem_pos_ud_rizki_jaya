@@ -38,4 +38,10 @@ class Transaksi extends Model
     {
         return $this->hasMany(DetailTransaksi::class);
     }
+
+    // piutang dari transaksi
+    public function piutang()
+    {
+        return $this->hasOne(Piutang::class);
+    }
 }

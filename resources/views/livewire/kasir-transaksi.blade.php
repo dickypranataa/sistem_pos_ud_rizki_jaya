@@ -212,9 +212,97 @@
                             <option value="{{ $metode->id }}" {{ $pembayaran_id == $metode->id ? 'selected' : '' }}>{{ $metode->nama_pembayaran }}</option>
                         @endforeach
                     </select>
-                    <input type="hidden" wire:model="pembayaran_id" id="hidden-pembayaran">
+                    <input type="hidden" wire:model.live="pembayaran_id" id="hidden-pembayaran">
                 </div>
 
+                {{-- ======= FORM PIUTANG (muncul jika pilih Piutang/Bon) ======= --}}
+                @if($isPiutang)
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 space-y-3">
+                    <p class="text-[11px] font-bold text-amber-700 uppercase tracking-widest flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Data Piutang
+                    </p>
+
+                    {{-- Pencarian Pelanggan --}}
+                    @if(!$pelanggan_id)
+                    <div class="relative">
+                        <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Cari Pelanggan</label>
+                        <input type="text" wire:model.live.debounce.300ms="pelanggan_search"
+                            placeholder="Ketik nama / no. HP..."
+                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                        {{-- Hasil Pencarian --}}
+                        @if(!empty($hasil_cari_pelanggan))
+                        <div class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                            @foreach($hasil_cari_pelanggan as $p)
+                            <button type="button" wire:click="pilihPelanggan({{ $p['id'] }}, '{{ $p['nama_pelanggan'] }}')"
+                                class="w-full text-left px-3 py-2 text-sm hover:bg-amber-50 transition-colors border-b border-gray-100 last:border-0">
+                                <span class="font-semibold text-gray-800">{{ $p['nama_pelanggan'] }}</span>
+                                @if($p['no_hp'])<span class="text-gray-400 text-xs ml-2">{{ $p['no_hp'] }}</span>@endif
+                                @if($p['alamat'])<br><span class="text-gray-400 text-xs">{{ Str::limit($p['alamat'], 40) }}</span>@endif
+                            </button>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+
+                    {{-- Toggle form pelanggan baru --}}
+                    <button type="button" wire:click="toggleFormBaru"
+                        class="text-[11px] font-semibold text-amber-600 hover:text-amber-800 underline flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        {{ $show_form_baru ? 'Batal Tambah Baru' : 'Tambah Pelanggan Baru' }}
+                    </button>
+
+                    @if($show_form_baru)
+                    <div class="space-y-2 pt-1">
+                        <input type="text" wire:model="pelanggan_baru_nama" placeholder="Nama Pelanggan *"
+                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                        <input type="text" wire:model="pelanggan_baru_alamat" placeholder="Alamat (opsional)"
+                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                        <input type="text" wire:model="pelanggan_baru_no_hp" placeholder="No. HP (opsional)"
+                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                    </div>
+                    @endif
+
+                    @else
+                    {{-- Pelanggan sudah dipilih --}}
+                    <div class="flex items-center justify-between bg-white border border-amber-200 rounded-xl px-3 py-2">
+                        <div>
+                            <p class="text-xs font-bold text-gray-700">{{ $pelanggan_nama }}</p>
+                            <p class="text-[10px] text-gray-400">Pelanggan terpilih</p>
+                        </div>
+                        <button type="button" wire:click="batalPilihPelanggan" class="text-red-400 hover:text-red-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    @endif
+
+                    {{-- Uang Muka (DP) --}}
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Uang Muka / DP (isi 0 jika tidak ada)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-3 flex items-center text-amber-500 text-sm font-bold">Rp</span>
+                            <input type="text" id="dp-display"
+                                oninput="formatDP(this)"
+                                placeholder="0" autocomplete="off"
+                                class="w-full pl-10 pr-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white font-bold">
+                            <input type="hidden" wire:model.live="dp" id="dp-hidden">
+                        </div>
+                        @php $dp = (int)str_replace('.', '', $this->dp); $sisa = $total_harga - $dp; @endphp
+                        @if($dp > 0 && $sisa > 0)
+                        <p class="text-[11px] text-amber-700 mt-1 font-semibold">Kekurangan: Rp {{ number_format($sisa, 0, ',', '.') }}</p>
+                        @endif
+                    </div>
+
+                    {{-- Jatuh Tempo --}}
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Jatuh Tempo</label>
+                        <input type="date" wire:model.live="jatuh_tempo"
+                            min="{{ now()->format('Y-m-d') }}"
+                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                    </div>
+                </div>
+                @else
+                {{-- Input Uang Diterima (hanya tampil jika bukan piutang) --}}
                 <div>
                     <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Uang
                         Diterima</label>
@@ -222,29 +310,38 @@
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <span class="text-gray-400 text-sm font-bold">Rp</span>
                         </div>
-                        {{-- Input tampilan dengan format titik ribuan --}}
                         <input type="text" id="bayar-display"
                             oninput="formatUang(this)"
                             placeholder="0"
                             autocomplete="off"
                             class="w-full pl-11 pr-3 py-2.5 text-sm border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-bold bg-white transition-all duration-200">
-                        {{-- Input tersembunyi untuk Livewire binding --}}
                         <input type="hidden" wire:model.live.debounce.300ms="bayar" id="bayar-hidden">
                     </div>
                 </div>
+                @endif
             </div>
 
+            @if(!$isPiutang)
             <div
                 class="flex justify-between items-center mb-4 px-4 py-3 rounded-2xl font-semibold border
                 {{ $kembalian < 0 ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100' }}">
                 <span class="text-sm font-bold">Kembalian</span>
                 <span class="text-lg font-extrabold">Rp {{ number_format($kembalian, 0, ',', '.') }}</span>
             </div>
+            @endif
 
-            <button wire:click="simpanTransaksi" wire:loading.attr="disabled" {{ $total_harga == 0 || $kembalian < 0 || empty($pembayaran_id) || $this->hasInvalidQty() ? 'disabled' : '' }} class="w-full py-3.5 px-4 rounded-2xl text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98]
-                    {{ $total_harga == 0 || $kembalian < 0 || empty($pembayaran_id) || $this->hasInvalidQty()
-    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-    : 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 hover:-translate-y-0.5' }}">
+            @php
+                $dpInt = (int)str_replace('.', '', $this->dp);
+                $piutangValid = $isPiutang && (!empty($pelanggan_id) || !empty($pelanggan_baru_nama)) && !empty($jatuh_tempo) && $dpInt >= 0 && $dpInt <= $total_harga;
+                $tunaiValid   = !$isPiutang && $kembalian >= 0;
+                $canProcess   = $total_harga > 0 && !empty($pembayaran_id) && !$this->hasInvalidQty() && ($piutangValid || $tunaiValid);
+            @endphp
+            <button wire:click="simpanTransaksi" wire:loading.attr="disabled"
+                {{ $canProcess ? '' : 'disabled' }}
+                class="w-full py-3.5 px-4 rounded-2xl text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98]
+                    {{ $canProcess
+    ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 hover:-translate-y-0.5'
+    : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}">
                 <span wire:loading.remove wire:target="simpanTransaksi" class="flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -271,10 +368,16 @@
         function formatUang(el) {
             let clean = el.value.replace(/\D/g, '');
             el.value = clean === '' ? '' : clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            // Kirim nilai bersih (tanpa titik) ke hidden input Livewire
             let hidden = document.getElementById('bayar-hidden');
-            hidden.value = clean;
-            hidden.dispatchEvent(new Event('input'));
+            if (hidden) { hidden.value = clean; hidden.dispatchEvent(new Event('input')); }
+        }
+
+        // Format DP dengan pemisah titik ribuan
+        function formatDP(el) {
+            let clean = el.value.replace(/\D/g, '');
+            el.value = clean === '' ? '' : clean.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            let hidden = document.getElementById('dp-hidden');
+            if (hidden) { hidden.value = clean; hidden.dispatchEvent(new Event('input')); }
         }
 
         // Kirim pilihan metode pembayaran langsung ke Livewire

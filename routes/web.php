@@ -13,11 +13,13 @@ use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\RiwayatStokController;
 use App\Http\Controllers\Admin\KoreksiStokController;
 use App\Http\Controllers\Admin\AsistenAiController;
+use App\Http\Controllers\Admin\PiutangController;
 
 //kasir
 use App\Http\Controllers\Kasir\KasirController;
 use App\Livewire\KasirTransaksi;
 use App\Http\Controllers\Kasir\RiwayatTransaksi;
+use App\Http\Controllers\Kasir\PiutangKasirController;
 
 
 Route::get('/', function () {
@@ -45,6 +47,13 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
 
     // Rute untuk AI
     Route::post('/tanya-ai', [AsistenAiController::class, 'tanya'])->name('tanya.ai');
+
+    // Manajemen Piutang
+    Route::get('piutang', [PiutangController::class, 'index'])->name('piutang.index');
+    Route::get('piutang/{id}', [PiutangController::class, 'show'])->name('piutang.show');
+    Route::post('piutang/{id}/bayar', [PiutangController::class, 'storePembayaran'])->name('piutang.bayar');
+    Route::post('piutang/{id}/perpanjang', [PiutangController::class, 'storePerpanjangan'])->name('piutang.perpanjang');
+    Route::get('piutang/{id}/cetak-cicilan/{cicilanId}', [PiutangController::class, 'cetakCicilan'])->name('piutang.cetak_cicilan');
 });
 
 Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function () {
@@ -61,6 +70,13 @@ Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function
     Route::get('riwayat', [RiwayatTransaksi::class, 'index'])->name('riwayat.index');
     Route::get('riwayat/{id}', [RiwayatTransaksi::class, 'show'])->name('riwayat.show');
     Route::get('riwayat/{id}/cetak', [RiwayatTransaksi::class, 'cetakStruk'])->name('riwayat.cetak');
+
+    // Piutang Kasir
+    Route::get('piutang', [PiutangKasirController::class, 'index'])->name('piutang.index');
+    Route::get('piutang/{id}', [PiutangKasirController::class, 'show'])->name('piutang.show');
+    Route::post('piutang/{id}/bayar', [PiutangKasirController::class, 'storePembayaran'])->name('piutang.bayar');
+    Route::post('piutang/{id}/perpanjang', [PiutangKasirController::class, 'storePerpanjangan'])->name('piutang.perpanjang');
+    Route::get('piutang/{id}/cetak-cicilan/{cicilanId}', [PiutangKasirController::class, 'cetakCicilan'])->name('piutang.cetak_cicilan');
 });
 
 Route::middleware('auth')->group(function () {

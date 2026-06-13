@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Struk Transaksi - {{ $transaksi->kode_transaksi }}</title>
+    <title>Struk - {{ $transaksi->kode_transaksi }}</title>
     <style>
-        /* CSS Khusus Printer Thermal */
         body {
             font-family: 'Courier New', Courier, monospace;
             font-size: 12px;
             color: #000;
             margin: 0;
             padding: 10px;
-            width: 80mm; /* Ubah ke 58mm jika printer kasir Anda ukuran kecil */
+            width: 80mm;
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -26,31 +25,22 @@
         .total-area { border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
         .total-area table { width: 100%; }
         .footer { text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px; }
-        
-        /* Menyembunyikan tombol saat struk di-print */
+        .piutang-box { border: 2px dashed #000; padding: 6px; margin: 10px 0; }
+        .piutang-box .label { font-weight: bold; font-size: 13px; text-align: center; margin-bottom: 4px; }
         @media print {
             .no-print { display: none !important; }
             body { width: 100%; margin: 0; padding: 0; }
             @page { margin: 0; }
         }
-
-        /* Tombol print manual (hanya terlihat di layar) */
         .btn-print {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #3b82f6;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            font-family: Arial, sans-serif;
-            margin-bottom: 15px;
-            border-radius: 5px;
+            display: block; width: 100%; padding: 10px;
+            background-color: #3b82f6; color: white;
+            text-align: center; text-decoration: none;
+            font-family: Arial, sans-serif; margin-bottom: 15px; border-radius: 5px;
         }
     </style>
 </head>
 <body>
-
     <a href="#" class="btn-print no-print" onclick="window.print(); return false;">🖨️ Cetak Sekarang</a>
 
     <div class="header text-center">
@@ -82,6 +72,51 @@
         </table>
     </div>
 
+    @php $piutang = $transaksi->piutang; @endphp
+
+    @if($piutang)
+    {{-- ===== STRUK PIUTANG ===== --}}
+    <div class="piutang-box">
+        <div class="label">★ BELUM LUNAS ★</div>
+        <table style="width:100%">
+            <tr>
+                <td>Pelanggan</td>
+                <td class="text-right font-bold">{{ $piutang->pelanggan->nama_pelanggan }}</td>
+            </tr>
+            @if($piutang->pelanggan->alamat)
+            <tr>
+                <td>Alamat</td>
+                <td class="text-right">{{ $piutang->pelanggan->alamat }}</td>
+            </tr>
+            @endif
+        </table>
+    </div>
+
+    <div class="total-area">
+        <table>
+            <tr>
+                <td class="font-bold">Total Belanja</td>
+                <td class="font-bold text-right">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>
+            </tr>
+            @php $dp = $transaksi->total_harga - $piutang->sisa_tagihan; @endphp
+            @if($dp > 0)
+            <tr>
+                <td>DP / Uang Muka</td>
+                <td class="text-right">Rp {{ number_format($dp, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            <tr>
+                <td class="font-bold">Sisa Tagihan</td>
+                <td class="font-bold text-right">Rp {{ number_format($piutang->sisa_tagihan, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>Jatuh Tempo</td>
+                <td class="text-right">{{ \Carbon\Carbon::parse($piutang->jatuh_tempo)->format('d M Y') }}</td>
+            </tr>
+        </table>
+    </div>
+    @else
+    {{-- ===== STRUK TUNAI ===== --}}
     <div class="total-area">
         <table>
             <tr>
@@ -98,6 +133,7 @@
             </tr>
         </table>
     </div>
+    @endif
 
     <div class="footer">
         <p>Terima Kasih Telah Berbelanja</p>
@@ -105,9 +141,7 @@
     </div>
 
     <script>
-        window.onload = function() {
-            window.print();
-        }
+        window.onload = function() { window.print(); }
     </script>
 </body>
 </html>
