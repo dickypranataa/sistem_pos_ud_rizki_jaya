@@ -17,9 +17,36 @@
     </a>
 </div>
 
-{{-- Search --}}
+{{-- Search & Filter --}}
 <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-5">
-    <form action="{{ route('admin.produk.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2.5">
+    <form action="{{ route('admin.produk.index') }}" method="GET"
+        class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+
+        {{-- Dropdown Kategori --}}
+        <div class="relative sm:w-52 flex-shrink-0">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+            </div>
+            <select name="kategori_id" id="filter-kategori"
+                class="w-full pl-10 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 font-medium transition-all duration-200 appearance-none cursor-pointer">
+                <option value="">— Semua Kategori —</option>
+                @foreach($kategoris as $kat)
+                    <option value="{{ $kat->id }}" {{ request('kategori_id') == $kat->id ? 'selected' : '' }}>
+                        {{ $kat->nama_kategori }}
+                    </option>
+                @endforeach
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+        </div>
+
+        {{-- Input Pencarian --}}
         <div class="relative flex-1">
             <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -28,11 +55,48 @@
                 class="w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 placeholder-gray-400 transition-all duration-200"
                 placeholder="Cari SKU atau Nama Produk...">
         </div>
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white py-2.5 px-5 rounded-xl text-sm font-semibold transition-all duration-200">Cari</button>
-        @if(request('search'))
-            <a href="{{ route('admin.produk.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-center">Reset</a>
+
+        {{-- Tombol Cari --}}
+        <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white py-2.5 px-5 rounded-xl text-sm font-semibold transition-all duration-200 flex-shrink-0">
+            Cari
+        </button>
+
+        {{-- Tombol Reset (muncul jika ada filter aktif) --}}
+        @if(request('search') || request('kategori_id'))
+            <a href="{{ route('admin.produk.index') }}"
+                class="bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-600 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-center flex-shrink-0">
+                Reset
+            </a>
         @endif
     </form>
+
+    {{-- Info filter aktif --}}
+    @if(request('search') || request('kategori_id'))
+    <div class="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-2 items-center">
+        <span class="text-xs text-gray-400 font-medium">Filter aktif:</span>
+        @if(request('kategori_id'))
+            @php $namaKat = $kategoris->firstWhere('id', request('kategori_id'))?->nama_kategori; @endphp
+            @if($namaKat)
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-lg text-xs font-semibold">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                Kategori: {{ $namaKat }}
+            </span>
+            @endif
+        @endif
+        @if(request('search'))
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-600 border border-gray-200 rounded-lg text-xs font-semibold">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Kata kunci: "{{ request('search') }}"
+        </span>
+        @endif
+        <span class="text-xs text-gray-400 font-medium">— {{ $produks->total() }} produk ditemukan</span>
+    </div>
+    @endif
 </div>
 
 {{-- Table --}}

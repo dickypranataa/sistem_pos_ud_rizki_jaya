@@ -4,20 +4,11 @@
     <div class="w-full lg:w-2/3 flex flex-col p-4 sm:p-5 lg:border-r border-gray-100 bg-white">
 
         {{-- Header --}}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
-            <div>
-                <h2 class="text-lg font-extrabold text-gray-900 tracking-tight">Katalog Produk</h2>
-                <p class="text-xs text-gray-400 mt-0.5 font-medium">Klik produk untuk menambah ke keranjang</p>
-            </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <div class="relative flex-1 sm:w-64">
-                    <input type="text" wire:model.live="search" placeholder="Cari produk atau SKU..."
-                        class="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white placeholder-gray-400 transition-all duration-200">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+        <div class="flex flex-col gap-3 mb-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-extrabold text-gray-900 tracking-tight">Katalog Produk</h2>
+                    <p class="text-xs text-gray-400 mt-0.5 font-medium">Klik produk untuk menambah ke keranjang</p>
                 </div>
                 <a href="{{ route('kasir.dashboard') }}"
                     class="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-600 py-2.5 px-3.5 rounded-2xl text-sm font-semibold transition-all duration-200 flex-shrink-0">
@@ -27,6 +18,59 @@
                     </svg>
                     Kembali
                 </a>
+            </div>
+
+            {{-- Baris Filter: Dropdown Kategori + Search --}}
+            <div class="flex flex-col sm:flex-row gap-2">
+
+                {{-- Dropdown Kategori --}}
+                <div class="relative flex-shrink-0 sm:w-52">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                    </div>
+                    <select wire:model.live="selectedKategori"
+                        id="dropdown-kategori"
+                        class="w-full pl-9 pr-8 py-2.5 text-sm rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white text-gray-700 font-medium transition-all duration-200 appearance-none cursor-pointer">
+                        <option value="">— Semua Kategori —</option>
+                        @foreach($kategoris as $kat)
+                            <option value="{{ $kat->id }}">{{ $kat->nama_kategori }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Search Produk --}}
+                <div class="relative flex-1">
+                    <input type="text" wire:model.live="search"
+                        id="search-produk"
+                        placeholder="Cari nama produk atau SKU..."
+                        class="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white placeholder-gray-400 transition-all duration-200">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+
+                {{-- Tombol Reset (muncul jika ada filter aktif) --}}
+                @if(!empty($selectedKategori) || !empty($search))
+                <button type="button"
+                    wire:click="$set('selectedKategori', ''); $set('search', '')"
+                    title="Reset semua filter"
+                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-semibold bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 active:scale-95 transition-all duration-200 flex-shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Reset
+                </button>
+                @endif
             </div>
         </div>
 
@@ -40,6 +84,19 @@
                 {{ session('error') }}
             </div>
         @endif
+
+        {{-- Info Filter Aktif --}}
+        <div class="flex items-center justify-between mb-2">
+            <p class="text-xs text-gray-400 font-medium">
+                Menampilkan <span class="font-bold text-gray-700">{{ $produks->count() }}</span> produk
+                @if(!empty($selectedKategori))
+                    @php $namaKat = $kategoris->firstWhere('id', $selectedKategori)?->nama_kategori; @endphp
+                    @if($namaKat)
+                        &mdash; kategori <span class="text-blue-600 font-bold">{{ $namaKat }}</span>
+                    @endif
+                @endif
+            </p>
+        </div>
 
         {{-- Grid Produk --}}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 overflow-y-auto pr-1 pb-4">
@@ -92,10 +149,20 @@
                         </span>
 
                         {{-- Nama Produk --}}
-                        <h3 class="text-sm font-bold text-gray-900 leading-snug line-clamp-2 flex-1"
+                        <h3 class="text-sm font-bold text-gray-900 leading-snug line-clamp-2"
                             title="{{ $produk->nama_produk }}">
                             {{ $produk->nama_produk }}
                         </h3>
+
+                        {{-- Badge Kategori --}}
+                        @if($produk->kategori)
+                            <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-violet-50 text-violet-500 border border-violet-100 w-fit leading-none">
+                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                </svg>
+                                {{ $produk->kategori->nama_kategori }}
+                            </span>
+                        @endif
 
                         {{-- Divider + Harga --}}
                         <div class="pt-2 mt-1 border-t border-gray-100 flex items-center justify-between gap-1">

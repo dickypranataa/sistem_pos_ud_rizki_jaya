@@ -53,17 +53,27 @@
                 <div class="max-h-80 overflow-y-auto">
                     @forelse(auth()->user()->unreadNotifications as $notif)
                         <a href="{{ $notif->data['url'] }}" class="flex gap-3 px-4 py-3 border-b border-gray-50 hover:bg-blue-50/50 transition-colors duration-150">
+                            {{-- Ikon berbeda per tipe notifikasi --}}
+                            @if(($notif->data['tipe'] ?? '') === 'piutang_jatuh_tempo')
+                            <div class="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            @else
                             <div class="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
+                            @endif
                             <div class="min-w-0">
                                 <p class="text-xs font-bold {{ $notif->data['warna'] }} leading-snug">{{ $notif->data['judul'] }}</p>
                                 <p class="text-xs text-gray-500 mt-0.5 leading-snug line-clamp-2">{{ $notif->data['pesan'] }}</p>
                                 <p class="text-[10px] text-gray-400 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
                             </div>
                         </a>
+
                     @empty
                         <div class="px-4 py-8 text-center">
                             <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-2">

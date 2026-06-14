@@ -11,14 +11,28 @@ use Illuminate\Support\Facades\Storage; // WAJIB TAMBAH INI DI ATAS
 class ProdukController extends Controller
 {
     public function index(){
-        $search = request('search');
-        $produks = Produk::query()->where('nama_produk', 'like', "%{$search}%")
-                      ->orWhere('sku', 'like', "%{$search}%")
-                      ->latest()
-                      ->paginate(10)
-                      ->withQueryString();
+        $search     = request('search');
+        $kategoriId = request('kategori_id');
 
-        return view('admin.produk.index', compact('produks'));
+        $query = Produk::with('kategori')->latest();
+
+        // Filter pencarian SKU / Nama Produk
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_produk', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter berdasarkan kategori (dropdown)
+        if ($kategoriId) {
+            $query->where('kategori_id', $kategoriId);
+        }
+
+        $produks   = $query->paginate(10)->withQueryString();
+        $kategoris = Kategori::orderBy('nama_kategori')->get();
+
+        return view('admin.produk.index', compact('produks', 'kategoris'));
     }
 
     public function create()

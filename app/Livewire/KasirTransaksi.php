@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\DetailTransaksi;
+use App\Models\Kategori;
 use App\Models\Pelanggan;
 use App\Models\Pembayaran;
 use App\Models\Piutang;
@@ -19,6 +20,8 @@ class KasirTransaksi extends Component
 {
     // === State Keranjang & Pembayaran ===
     public $search = '';
+
+    public $selectedKategori = '';
 
     public $keranjang = [];
 
@@ -401,7 +404,7 @@ class KasirTransaksi extends Component
             $urlStruk = route('kasir.transaksi.cetak', $transaksiBerhasil->id);
 
             $this->reset(['keranjang', 'total_harga', 'bayar', 'kembalian', 'pembayaran_id',
-                'search', 'tipe_harga', 'isPiutang', 'pelanggan_id', 'pelanggan_nama',
+                'search', 'selectedKategori', 'tipe_harga', 'isPiutang', 'pelanggan_id', 'pelanggan_nama',
                 'pelanggan_search', 'dp', 'show_form_baru',
                 'pelanggan_baru_nama', 'pelanggan_baru_alamat', 'pelanggan_baru_no_hp',
                 'hasil_cari_pelanggan']);
@@ -419,22 +422,34 @@ class KasirTransaksi extends Component
 
     public function render()
     {
-        $produks = Produk::with('kategori')
-            ->where('nama_produk', 'like', '%'.$this->search.'%')
-            ->orWhere('sku', 'like', '%'.$this->search.'%')
-            ->latest()
-            ->limit(12)
-            ->get();
+        $query = Produk::with('kategori');
 
+        // Filter berdasarkan kategori (dropdown)
+        if (! empty($this->selectedKategori)) {
+            $query->where('kategori_id', $this->selectedKategori);
+        }
+
+        // Filter berdasarkan pencarian nama / SKU
+        if (! empty($this->search)) {
+            $term = '%'.$this->search.'%';
+            $query->where(function ($q) use ($term) {
+                $q->where('nama_produk', 'like', $term)
+                  ->orWhere('sku', 'like', $term);
+            });
+        }
+
+        $produks          = $query->latest()->limit(24)->get();
+        $kategoris        = Kategori::orderBy('nama_kategori')->get();
         $metodePembayaran = Pembayaran::all();
 
         return view('livewire.kasir-transaksi', [
-            'produks' => $produks,
+            'produks'          => $produks,
+            'kategoris'        => $kategoris,
             'metodePembayaran' => $metodePembayaran,
         ])->layout('layouts.kasir', [
-            'hideSidebar' => true,
-            'hideNavbar' => true,
-            'hideFooter' => true,
+            'hideSidebar'  => true,
+            'hideNavbar'   => true,
+            'hideFooter'   => true,
             'isFullScreen' => true,
         ]);
     }
