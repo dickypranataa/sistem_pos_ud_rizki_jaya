@@ -115,7 +115,7 @@
                 <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nama Kategori</label>
                 <input type="text" name="nama_kategori" id="add_nama_kategori" required
                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
-                    placeholder="Contoh: Minuman, Makanan Ringan...">
+                    placeholder="Contoh: Selang, Kran, Kabel">
                 @error('nama_kategori') <span class="text-red-500 text-xs mt-1 font-medium block">{{ $message }}</span> @enderror
             </div>
             <div class="flex justify-end gap-2.5">

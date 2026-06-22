@@ -21,8 +21,8 @@
         {{-- Dashboard --}}
         <a href="{{ route('admin.dashboard') }}"
             class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.dashboard') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
+           {{ request()->routeIs('admin.dashboard')
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
             <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
                 {{ request()->routeIs('admin.dashboard') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
@@ -35,145 +35,241 @@
             Dashboard
         </a>
 
-        {{-- Section: User --}}
-        <div class="pt-4 pb-1.5 px-3">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">User</span>
+        {{-- ============================== --}}
+        {{-- DROPDOWN: User                --}}
+        {{-- ============================== --}}
+        @php $isUserActive = request()->routeIs('admin.user.*'); @endphp
+
+        <div x-data="{ open: {{ $isUserActive ? 'true' : 'false' }} }" class="pt-2">
+            {{-- Trigger --}}
+            <button @click="open = !open"
+                class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
+                    {{ $isUserActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                {{-- Label Kiri --}}
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
+                    {{ $isUserActive ? 'bg-blue-100' : 'bg-gray-100 group-hover:bg-blue-50' }}">
+                    <svg class="w-4 h-4 {{ $isUserActive ? 'text-blue-600' : 'text-gray-500 group-hover:text-blue-600' }}"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a4 4 0 00-5.196-3.796M9 20H4v-2a4 4 0 015.196-3.796M15 7a4 4 0 11-8 0 4 4 0 018 0zm6 3a3 3 0 11-6 0 3 3 0 016 0zM3 10a3 3 0 116 0 3 3 0 01-6 0z"/>
+                    </svg>
+                </span>
+                <span class="flex-1 text-left">User</span>
+                {{-- Chevron --}}
+                <svg class="w-4 h-4 transition-transform duration-300 {{ $isUserActive ? 'text-blue-500' : 'text-gray-400' }}"
+                    :class="open ? 'rotate-180' : 'rotate-0'"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            {{-- Dropdown Items --}}
+            <div x-show="open"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-1"
+                 class="ml-4 mt-1 space-y-0.5 border-l-2 border-gray-100 pl-3">
+
+                <a href="{{ route('admin.user.index') }}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.user.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.user.*') ? 'text-white' : 'text-gray-400' }}"
+                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
+                    </svg>
+                    Data User
+                </a>
+
+            </div>
         </div>
 
-        <a href="{{ route('admin.user.index') }}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.user.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.user.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.user.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
-                </svg>
-            </span>
-            Data User
-        </a>
+        {{-- ============================== --}}
+        {{-- DROPDOWN: Master Data         --}}
+        {{-- ============================== --}}
+        @php $isMasterActive = request()->routeIs('admin.produk.*') || request()->routeIs('admin.koreksi.*') || request()->routeIs('admin.kategori.*'); @endphp
 
-        {{-- Section: Master Data --}}
-        <div class="pt-4 pb-1.5 px-3">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Master Data</span>
+        <div x-data="{ open: {{ $isMasterActive ? 'true' : 'false' }} }" class="pt-1">
+            {{-- Trigger --}}
+            <button @click="open = !open"
+                class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
+                    {{ $isMasterActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
+                    {{ $isMasterActive ? 'bg-blue-100' : 'bg-gray-100 group-hover:bg-blue-50' }}">
+                    <svg class="w-4 h-4 {{ $isMasterActive ? 'text-blue-600' : 'text-gray-500 group-hover:text-blue-600' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                    </svg>
+                </span>
+                <span class="flex-1 text-left">Master Data</span>
+                <svg class="w-4 h-4 transition-transform duration-300 {{ $isMasterActive ? 'text-blue-500' : 'text-gray-400' }}"
+                    :class="open ? 'rotate-180' : 'rotate-0'"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            {{-- Dropdown Items --}}
+            <div x-show="open"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-1"
+                 class="ml-4 mt-1 space-y-0.5 border-l-2 border-gray-100 pl-3">
+
+                {{-- Data Produk --}}
+                <a href="{{ route('admin.produk.index') }}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.produk.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.produk.*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    Data Produk
+                </a>
+
+                {{-- Koreksi Stok --}}
+                <a href="{{ route('admin.koreksi.create') }}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.koreksi.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.koreksi.*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
+                    </svg>
+                    Koreksi Stok
+                </a>
+
+                {{-- Kategori --}}
+                <a href="{{ route('admin.kategori.index') }}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.kategori.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.kategori.*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                        </path>
+                    </svg>
+                    Kategori
+                </a>
+
+            </div>
         </div>
 
-        <a href="{{ route('admin.produk.index') }}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.produk.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.produk.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.produk.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-            </span>
-            Data Produk
-        </a>
+        {{-- ============================== --}}
+        {{-- DROPDOWN: Transaksi & Laporan --}}
+        {{-- ============================== --}}
+        @php $isTransaksiActive = request()->routeIs('admin.pembayaran.*') || request()->routeIs('admin.riwayat.*') || request()->routeIs('admin.transaksi.*') || request()->routeIs('admin.piutang.*'); @endphp
 
-        <a href="{{ route('admin.koreksi.create') }}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.koreksi.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.koreksi.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.koreksi.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                    </path>
+        <div x-data="{ open: {{ $isTransaksiActive ? 'true' : 'false' }} }" class="pt-1">
+            {{-- Trigger --}}
+            <button @click="open = !open"
+                class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
+                    {{ $isTransaksiActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
+                    {{ $isTransaksiActive ? 'bg-blue-100' : 'bg-gray-100 group-hover:bg-blue-50' }}">
+                    <svg class="w-4 h-4 {{ $isTransaksiActive ? 'text-blue-600' : 'text-gray-500 group-hover:text-blue-600' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </span>
+                <span class="flex-1 text-left">Transaksi & Laporan</span>
+                <svg class="w-4 h-4 transition-transform duration-300 {{ $isTransaksiActive ? 'text-blue-500' : 'text-gray-400' }}"
+                    :class="open ? 'rotate-180' : 'rotate-0'"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
-            </span>
-            Koreksi Stok
-        </a>
+            </button>
 
-        <a href="{{ route('admin.kategori.index') }}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.kategori.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.kategori.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.kategori.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                    </path>
-                </svg>
-            </span>
-            Kategori
-        </a>
+            {{-- Dropdown Items --}}
+            <div x-show="open"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-1"
+                 class="ml-4 mt-1 space-y-0.5 border-l-2 border-gray-100 pl-3">
 
-        {{-- Section: Transaksi & Laporan --}}
-        <div class="pt-4 pb-1.5 px-3">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Transaksi & Laporan</span>
+                {{-- Metode Pembayaran --}}
+                <a href="{{ route('admin.pembayaran.index') }}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.pembayaran.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.pembayaran.*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                        </path>
+                    </svg>
+                    Metode Pembayaran
+                </a>
+
+                {{-- Riwayat Stok --}}
+                <a href="{{ route('admin.riwayat.index')}}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.riwayat.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.riwayat.*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
+                        </path>
+                    </svg>
+                    Riwayat Stok
+                </a>
+
+                {{-- Riwayat Transaksi --}}
+                <a href="{{ route('admin.transaksi.index')}}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.transaksi.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.transaksi.*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                        </path>
+                    </svg>
+                    Riwayat Transaksi
+                </a>
+
+                {{-- Manajemen Piutang --}}
+                <a href="{{ route('admin.piutang.index')}}"
+                    class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                    {{ request()->routeIs('admin.piutang.*')
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.piutang.*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                    Manajemen Piutang
+                </a>
+
+            </div>
         </div>
 
-        <a href="{{ route('admin.pembayaran.index') }}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.pembayaran.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.pembayaran.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.pembayaran.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
-                    </path>
-                </svg>
-            </span>
-            Metode Pembayaran
-        </a>
-
-        <a href="{{ route('admin.riwayat.index')}}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.riwayat.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.riwayat.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.riwayat.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
-                    </path>
-                </svg>
-            </span>
-            Riwayat Stok
-        </a>
-
-        <a href="{{ route('admin.transaksi.index')}}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.transaksi.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.transaksi.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.transaksi.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                    </path>
-                </svg>
-            </span>
-            Riwayat Transaksi
-        </a>
-
-        <a href="{{ route('admin.piutang.index')}}"
-            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.piutang.*') 
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-            <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200
-                {{ request()->routeIs('admin.piutang.*') ? 'bg-white/20' : 'bg-gray-100 group-hover:bg-blue-50' }}">
-                <svg class="w-4 h-4 {{ request()->routeIs('admin.piutang.*') ? 'text-white' : 'text-gray-500 group-hover:text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
-                    </path>
-                </svg>
-            </span>
-            Manajemen Piutang
-        </a>
     </nav>
 
     {{-- Footer Sidebar --}}
