@@ -118,7 +118,7 @@
                         <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">{{ $label }}</label>
                         <div class="relative">
                             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold pointer-events-none">Rp</span>
-                            <input type="number" step="0.01" name="{{ $field }}" value="{{ old($field) }}"
+                            <input type="number" step="0.01" min="0" name="{{ $field }}" value="{{ old($field) }}"
                                 class="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
                                 placeholder="0" required>
                         </div>

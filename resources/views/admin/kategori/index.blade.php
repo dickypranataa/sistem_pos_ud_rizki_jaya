@@ -114,9 +114,17 @@
             <div class="mb-5">
                 <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nama Kategori</label>
                 <input type="text" name="nama_kategori" id="add_nama_kategori" required
-                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
-                    placeholder="Contoh: Selang, Kran, Kabel">
-                @error('nama_kategori') <span class="text-red-500 text-xs mt-1 font-medium block">{{ $message }}</span> @enderror
+                    class="w-full border @error('nama_kategori') border-red-400 bg-red-50 @else border-gray-200 bg-gray-50 @enderror rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200"
+                    placeholder="Contoh: Selang, Kran, Kabel"
+                    value="{{ old('nama_kategori') }}">
+                @error('nama_kategori')
+                    <div class="flex items-center gap-1.5 mt-2">
+                        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-red-600 text-xs font-medium">{{ $message }}</span>
+                    </div>
+                @enderror
             </div>
             <div class="flex justify-end gap-2.5">
                 <button type="button" onclick="closeModal()"
@@ -151,8 +159,16 @@
             @method('PUT')
             <div class="mb-5">
                 <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nama Kategori</label>
-                <input type="text" name="nama_kategori" id="edit_nama_kategori" required
-                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200">
+                <input type="text" name="nama_kategori_edit" id="edit_nama_kategori" required
+                    class="w-full border @error('nama_kategori_edit') border-red-400 bg-red-50 @else border-gray-200 bg-gray-50 @enderror rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all duration-200">
+                @error('nama_kategori_edit')
+                    <div class="flex items-center gap-1.5 mt-2">
+                        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-red-600 text-xs font-medium">{{ $message }}</span>
+                    </div>
+                @enderror
             </div>
             <div class="flex justify-end gap-2.5">
                 <button type="button" onclick="closeEditModal()"
@@ -167,7 +183,7 @@
 <script>
     function openModal() {
         document.getElementById('modal').classList.remove('hidden');
-        document.getElementById('add_nama_kategori').value = '';
+        document.getElementById('add_nama_kategori').focus();
     }
     function closeModal() {
         document.getElementById('modal').classList.add('hidden');
@@ -178,9 +194,33 @@
         let url = "{{ route('admin.kategori.update', ':id') }}";
         url = url.replace(':id', id);
         document.getElementById('editForm').action = url;
+        // Simpan id ke form agar bisa digunakan saat modal dibuka ulang akibat error
+        document.getElementById('editForm').dataset.kategoriId = id;
+        document.getElementById('editForm').dataset.kategoriNama = nama;
     }
     function closeEditModal() {
         document.getElementById('editModal').classList.add('hidden');
     }
+
+    // Otomatis buka modal yang sesuai jika ada error validasi dari server
+    document.addEventListener('DOMContentLoaded', function () {
+        @if ($errors->has('nama_kategori'))
+            // Error dari form Tambah → buka modal Tambah
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('add_nama_kategori').focus();
+        @endif
+
+        @if ($errors->has('nama_kategori_edit'))
+            // Error dari form Edit → buka modal Edit dengan data dari session
+            @if (session('edit_kategori_id') && session('edit_kategori_nama'))
+                openEditModal(
+                    {{ session('edit_kategori_id') }},
+                    '{{ addslashes(session('edit_kategori_nama')) }}'
+                );
+                document.getElementById('edit_nama_kategori').value = '{{ old('nama_kategori_edit') }}';
+                document.getElementById('edit_nama_kategori').focus();
+            @endif
+        @endif
+    });
 </script>
 @endsection

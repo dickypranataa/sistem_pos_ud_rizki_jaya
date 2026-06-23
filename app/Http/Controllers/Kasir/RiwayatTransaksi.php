@@ -14,12 +14,18 @@ class RiwayatTransaksi extends Controller
 {
     //
     public function index(Request $request){
-        //filter bulan
+        $request->validate([
+            'filter_bulan' => 'nullable|prohibits:filter_tanggal',
+            'filter_tanggal' => 'nullable|date|prohibits:filter_bulan',
+        ], [
+            'filter_bulan.prohibits' => 'Pilih salah satu: Filter berdasarkan Bulan ATAU Tanggal, tidak bisa keduanya.',
+            'filter_tanggal.prohibits' => 'Pilih salah satu: Filter berdasarkan Tanggal ATAU Bulan, tidak bisa keduanya.'
+        ]);
 
         $filterBulan = $request->input('filter_bulan');
         $filterTanggal = $request->input('filter_tanggal');
 
-    $transaksi = Transaksi::with(['user', 'pembayaran'])
+        $transaksi = Transaksi::with(['user', 'pembayaran'])
         ->where('user_id', Auth::id())
         ->when($filterBulan, function ($query) use ($filterBulan) {
             $waktu = explode('-', $filterBulan);
@@ -53,6 +59,11 @@ class RiwayatTransaksi extends Controller
     }
 
     public function export(Request $request){
+        $request->validate([
+            'filter_bulan' => 'nullable|prohibits:filter_tanggal',
+            'filter_tanggal' => 'nullable|date|prohibits:filter_bulan',
+        ]);
+
         $filterBulan = $request->input('filter_bulan');
         $filterTanggal = $request->input('filter_tanggal');
 

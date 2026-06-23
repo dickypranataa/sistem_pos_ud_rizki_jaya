@@ -8,40 +8,20 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <!-- Google Fonts: Plus Jakarta Sans for Google-like premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="{{ asset('images/logo_udrj.png') }}">
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
-    <div class="min-h-screen flex items-center justify-center relative overflow-hidden bg-blue-600">
-
-        <!-- Decorative Blur Circle -->
-        <div class="absolute -top-40 -left-40 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
-
-        <div
-            class="relative w-full max-w-5xl mx-4 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
-
-            <!-- Left Side (Branding - Desktop Only) -->
-            <div
-                class="hidden md:flex flex-col justify-center items-center text-white p-12 bg-white/10 backdrop-blur-xl">
-                <img src="{{ asset('images/logo_udrj.png') }}" class="w-24 mb-6 drop-shadow-lg">
-                <h1 class="text-3xl font-bold mb-3">UD Rizki Jaya</h1>
-                <p class="text-white/80 text-center text-sm leading-relaxed">
-                    Sistem POS modern untuk manajemen penjualan,
-                    stok barang, dan laporan transaksi secara real-time.
-                </p>
-            </div>
-
-            <!-- Right Side (Form) -->
-            <div class="bg-white p-8 md:p-12">
-                {{ $slot }}
-            </div>
-
+<body class="font-sans antialiased text-[#1f1f1f] bg-blue-600 min-h-screen flex items-center justify-center p-4 sm:p-6" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+    <div class="w-full flex flex-col items-center">
+        <!-- Google-inspired login card container with fully responsive styles -->
+        <div class="w-full max-w-[448px] bg-white rounded-3xl sm:rounded-[28px] p-6 sm:p-10 shadow-2xl">
+            {{ $slot }}
         </div>
     </div>
 </body>

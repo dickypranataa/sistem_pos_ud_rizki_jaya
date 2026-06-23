@@ -111,6 +111,16 @@ class KasirTransaksi extends Component
         $this->jatuh_tempo = now()->addDays(14)->format('Y-m-d');
     }
 
+    // Reset filter pencarian & kategori — dipanggil dari tombol Reset di view
+    public function resetFilter()
+    {
+        $this->search          = '';
+        $this->selectedKategori = '';
+
+        // Dispatch event ke browser agar input DOM ikut di-reset (mencegah bug morphdom)
+        $this->dispatch('reset-filter-inputs');
+    }
+
     // AJAX search pelanggan
     public function cariPelanggan()
     {

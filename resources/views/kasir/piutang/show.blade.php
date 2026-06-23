@@ -98,6 +98,35 @@
                 </table>
                 @endif
             </div>
+
+            {{-- Riwayat Perpanjangan --}}
+            @if($piutang->riwayatPerpanjanganTempos->isNotEmpty())
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-gray-100">
+                    <h2 class="text-sm font-bold text-gray-700">Riwayat Perpanjangan Tempo</h2>
+                </div>
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-[11px] font-bold text-gray-400 uppercase">Tempo Lama</th>
+                            <th class="px-4 py-2 text-left text-[11px] font-bold text-gray-400 uppercase">Tempo Baru</th>
+                            <th class="px-4 py-2 text-left text-[11px] font-bold text-gray-400 uppercase">Disetujui Oleh</th>
+                            <th class="px-4 py-2 text-left text-[11px] font-bold text-gray-400 uppercase">Alasan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @foreach($piutang->riwayatPerpanjanganTempos as $r)
+                        <tr>
+                            <td class="px-4 py-2.5 text-sm text-gray-500 line-through">{{ \Carbon\Carbon::parse($r->tempo_lama)->format('d M Y') }}</td>
+                            <td class="px-4 py-2.5 text-sm font-semibold text-gray-700">{{ \Carbon\Carbon::parse($r->tempo_baru)->format('d M Y') }}</td>
+                            <td class="px-4 py-2.5 text-sm text-gray-600">{{ $r->user->name }}</td>
+                            <td class="px-4 py-2.5 text-sm text-gray-500">{{ $r->alasan_perpanjangan ?: '-' }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
         </div>
 
         {{-- Kanan: Aksi --}}

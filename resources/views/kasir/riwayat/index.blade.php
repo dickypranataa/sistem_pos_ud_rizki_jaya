@@ -14,7 +14,7 @@
 
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Bulan</label>
-                <input type="month" name="filter_bulan" value="{{ request('filter_bulan') }}"
+                <input type="month" name="filter_bulan" value="{{ old('filter_bulan', request('filter_bulan')) }}"
                     class="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
             </div>
 
@@ -24,7 +24,7 @@
 
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tanggal</label>
-                <input type="date" name="filter_tanggal" value="{{ request('filter_tanggal') }}"
+                <input type="date" name="filter_tanggal" value="{{ old('filter_tanggal', request('filter_tanggal')) }}"
                     class="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
             </div>
 

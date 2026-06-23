@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+// ProfileController dihapus — halaman /profile tidak digunakan dalam sistem ini
 use Illuminate\Support\Facades\Route;
 
 //admin
@@ -81,14 +81,14 @@ Route::middleware('role:kasir')->prefix('kasir')->name('kasir.')->group(function
 
 Route::middleware('auth')->group(function () {
 
+    // Tandai semua notifikasi sebagai sudah dibaca
     Route::get('/notifikasi/read-all', function () {
         request()->user()->unreadNotifications->markAsRead();
         return redirect()->back();
     })->name('notifikasi.readAll');
-    
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Route /profile dihapus — halaman profil tidak digunakan dalam sistem ini.
+    // Pengelolaan user (nama, email, password) dilakukan oleh Admin melalui /admin/user.
 });
 
 require __DIR__.'/auth.php';

@@ -43,22 +43,37 @@ class ProdukController extends Controller
 
     public function store(Request $request){
         $request->validate([
-            'kategori_id' => 'required|integer|exists:kategoris,id',
-            'sku' => 'string|required|unique:produks,sku',
-            'nama_produk' => 'string|required|max:255',
-            'satuan' => 'string|required|max:255',
-            'stok' => 'integer|required|min:0',
+            'kategori_id'       => 'required|integer|exists:kategoris,id',
+            'sku'               => 'string|required|unique:produks,sku',
+            'nama_produk'       => 'string|required|max:255',
+            'satuan'            => 'string|required|max:255',
+            'stok'              => 'integer|required|min:0',
             'harga_modal'       => 'required|decimal:0,2|min:0',
             'harga_retail'      => 'required|decimal:0,2|min:0',
             'harga_semi_grosir' => 'required|decimal:0,2|min:0',
             'harga_grosir'      => 'required|decimal:0,2|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'stok.min'              => 'Stok tidak boleh bernilai minus. Masukkan angka 0 atau lebih.',
+            'stok.integer'          => 'Stok harus berupa bilangan bulat (tidak boleh desimal).',
+            'stok.required'         => 'Stok wajib diisi.',
+            'harga_modal.min'       => 'Harga modal tidak boleh bernilai minus.',
+            'harga_retail.min'      => 'Harga retail tidak boleh bernilai minus.',
+            'harga_semi_grosir.min' => 'Harga semi grosir tidak boleh bernilai minus.',
+            'harga_grosir.min'      => 'Harga grosir tidak boleh bernilai minus.',
+            'sku.unique'            => 'SKU sudah digunakan oleh produk lain.',
+            'kategori_id.exists'    => 'Kategori yang dipilih tidak valid.',
+            'gambar.max'            => 'Ukuran gambar maksimal 2MB.',
+            'gambar.mimes'          => 'Format gambar harus JPG, PNG, JPEG, atau GIF.',
         ]);
 
-        $data = $request->all();
+        $data = $request->except('gambar');
 
-        if($request->hasFile('gambar')){
-            $data['gambar'] = $request->file('gambar')->store('produk','public');
+        // Sanitasi stok: pastikan tidak tersimpan sebagai -0 atau nilai negatif apapun
+        $data['stok'] = abs((int) $request->stok);
+
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')->store('produk', 'public');
         }
 
         Produk::create($data);
@@ -74,29 +89,44 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id){
         $request->validate([
-            'kategori_id' => 'required|integer|exists:kategoris,id',
-            'sku' => 'string|required|unique:produks,sku,' . $id,
-            'nama_produk' => 'string|required|max:255',
-            'satuan' => 'string|required|max:255',
-            'stok' => 'integer|required|min:0',
+            'kategori_id'       => 'required|integer|exists:kategoris,id',
+            'sku'               => 'string|required|unique:produks,sku,' . $id,
+            'nama_produk'       => 'string|required|max:255',
+            'satuan'            => 'string|required|max:255',
+            'stok'              => 'integer|required|min:0',
             'harga_modal'       => 'required|decimal:0,2|min:0',
             'harga_retail'      => 'required|decimal:0,2|min:0',
             'harga_semi_grosir' => 'required|decimal:0,2|min:0',
             'harga_grosir'      => 'required|decimal:0,2|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'stok.min'              => 'Stok tidak boleh bernilai minus. Masukkan angka 0 atau lebih.',
+            'stok.integer'          => 'Stok harus berupa bilangan bulat (tidak boleh desimal).',
+            'stok.required'         => 'Stok wajib diisi.',
+            'harga_modal.min'       => 'Harga modal tidak boleh bernilai minus.',
+            'harga_retail.min'      => 'Harga retail tidak boleh bernilai minus.',
+            'harga_semi_grosir.min' => 'Harga semi grosir tidak boleh bernilai minus.',
+            'harga_grosir.min'      => 'Harga grosir tidak boleh bernilai minus.',
+            'sku.unique'            => 'SKU sudah digunakan oleh produk lain.',
+            'kategori_id.exists'    => 'Kategori yang dipilih tidak valid.',
+            'gambar.max'            => 'Ukuran gambar maksimal 2MB.',
+            'gambar.mimes'          => 'Format gambar harus JPG, PNG, JPEG, atau GIF.',
         ]);
 
-        $produk = Produk::find($id); // Temukan produk dulu
-        $data = $request->all();
+        $produk = Produk::findOrFail($id);
+        $data   = $request->except('gambar');
+
+        // Sanitasi stok: pastikan tidak tersimpan sebagai -0 atau nilai negatif apapun
+        $data['stok'] = abs((int) $request->stok);
 
         // JIKA ADA GAMBAR BARU YANG DIUNGGAH
-        if($request->hasFile('gambar')){
+        if ($request->hasFile('gambar')) {
             // 1. Hapus gambar lama dari server (jika ada)
             if ($produk->gambar && Storage::disk('public')->exists($produk->gambar)) {
                 Storage::disk('public')->delete($produk->gambar);
             }
             // 2. Simpan gambar baru
-            $data['gambar'] = $request->file('gambar')->store('produk','public');
+            $data['gambar'] = $request->file('gambar')->store('produk', 'public');
         }
 
         $produk->update($data);

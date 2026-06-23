@@ -28,11 +28,10 @@
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
                     </div>
-                    <select wire:model.live="selectedKategori"
-                        id="dropdown-kategori"
+                    <select wire:model.live="selectedKategori" id="dropdown-kategori"
                         class="w-full pl-9 pr-8 py-2.5 text-sm rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white text-gray-700 font-medium transition-all duration-200 appearance-none cursor-pointer">
                         <option value="">— Semua Kategori —</option>
                         @foreach($kategoris as $kat)
@@ -41,15 +40,14 @@
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
                 </div>
 
                 {{-- Search Produk --}}
                 <div class="relative flex-1">
-                    <input type="text" wire:model.live="search"
-                        id="search-produk"
+                    <input type="text" wire:model.live="search" id="search-produk"
                         placeholder="Cari nama produk atau SKU..."
                         class="w-full pl-9 pr-3 py-2.5 text-sm rounded-2xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 focus:bg-white placeholder-gray-400 transition-all duration-200">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
@@ -61,15 +59,14 @@
 
                 {{-- Tombol Reset (muncul jika ada filter aktif) --}}
                 @if(!empty($selectedKategori) || !empty($search))
-                <button type="button"
-                    wire:click="$set('selectedKategori', ''); $set('search', '')"
-                    title="Reset semua filter"
-                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-semibold bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 active:scale-95 transition-all duration-200 flex-shrink-0">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Reset
-                </button>
+                    <button type="button" wire:click="resetFilter" title="Reset semua filter"
+                        class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-semibold bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 active:scale-95 transition-all duration-200 flex-shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Reset
+                    </button>
                 @endif
             </div>
         </div>
@@ -110,26 +107,42 @@
                     $habis = $produk->stok < 1;
                 @endphp
 
+                @php
+                    // Tentukan warna & label stok berdasarkan jumlah
+                    if ($produk->stok == 0) {
+                        $stokColor = 'bg-red-50 text-red-600 border-red-100';
+                        $stokDotColor = 'bg-red-500';
+                        $stokLabel = 'Habis';
+                    } elseif ($produk->stok < 5) {
+                        $stokColor = 'bg-amber-50 text-amber-700 border-amber-100';
+                        $stokDotColor = 'bg-amber-500';
+                        $stokLabel = 'Kritis';
+                    } elseif ($produk->stok < 20) {
+                        $stokColor = 'bg-blue-50 text-blue-600 border-blue-100';
+                        $stokDotColor = 'bg-blue-400';
+                        $stokLabel = 'Cukup';
+                    } else {
+                        $stokColor = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                        $stokDotColor = 'bg-emerald-500';
+                        $stokLabel = 'Aman';
+                    }
+                @endphp
+
                 <div wire:key="produk-{{ $produk->id }}"
                     wire:click="{{ $habis ? '' : 'tambahKeKeranjang(' . $produk->id . ')' }}"
                     class="min-h-[250px] relative flex flex-col rounded-2xl border bg-white overflow-hidden transition-all duration-200
-                        {{ $habis ? 'border-gray-100 opacity-50 grayscale cursor-not-allowed' : 'border-gray-100 hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer group active:scale-[0.98]' }}">
+                            {{ $habis ? 'border-gray-100 opacity-50 grayscale cursor-not-allowed' : 'border-gray-100 hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer group active:scale-[0.98]' }}">
 
-                    {{-- Badge Stok --}}
+                    {{-- Badge HABIS di pojok (tetap ada untuk visibilitas cepat) --}}
                     @if ($produk->stok == 0)
                         <span
-                            class="absolute top-2 right-2 z-10 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                            Habis
-                        </span>
-                    @elseif($produk->stok < 5)
-                        <span
-                            class="absolute top-2 right-2 z-10 bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                            Sisa {{ $produk->stok }}
+                            class="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                            HABIS
                         </span>
                     @endif
 
                     {{-- Gambar --}}
-                    <div class="w-full bg-gray-50 flex items-center justify-center overflow-hidden" style="height: 130px;">
+                    <div class="w-full bg-gray-50 flex items-center justify-center overflow-hidden" style="height: 120px;">
                         @if ($produk->gambar)
                             <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
@@ -156,32 +169,50 @@
 
                         {{-- Badge Kategori --}}
                         @if($produk->kategori)
-                            <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-violet-50 text-violet-500 border border-violet-100 w-fit leading-none">
+                            <span
+                                class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-violet-50 text-violet-500 border border-violet-100 w-fit leading-none">
                                 <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                 </svg>
                                 {{ $produk->kategori->nama_kategori }}
                             </span>
                         @endif
 
-                        {{-- Divider + Harga --}}
-                        <div class="pt-2 mt-1 border-t border-gray-100 flex items-center justify-between gap-1">
-                            <span class="text-sm font-extrabold text-blue-600 leading-none">
-                                Rp {{ number_format($hargaTampil, 0, ',', '.') }}
-                            </span>
-                            @if(!$habis)
-                                <div
-                                    class="w-6 h-6 rounded-lg bg-blue-50 group-hover:bg-blue-600 flex items-center justify-center transition-all duration-200 flex-shrink-0">
-                                    <svg class="w-3.5 h-3.5 text-blue-400 group-hover:text-white transition-colors duration-200"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M12 4v16m8-8H4" />
-                                    </svg>
-                                </div>
-                            @endif
+                        {{-- Divider + Harga + Stok --}}
+                        <div class="pt-2 mt-auto border-t border-gray-100">
+
+                            {{-- Baris Harga + Tombol Tambah --}}
+                            <div class="flex items-center justify-between gap-1 mb-1.5">
+                                <span class="text-sm font-extrabold text-blue-600 leading-none">
+                                    Rp {{ number_format($hargaTampil, 0, ',', '.') }}
+                                </span>
+                                @if(!$habis)
+                                    <div
+                                        class="w-6 h-6 rounded-lg bg-blue-50 group-hover:bg-blue-600 flex items-center justify-center transition-all duration-200 flex-shrink-0">
+                                        <svg class="w-3.5 h-3.5 text-blue-400 group-hover:text-white transition-colors duration-200"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Baris Stok (selalu tampil) --}}
+                            <div class="flex items-center gap-1.5 px-2 py-1 rounded-lg border {{ $stokColor }} w-full">
+                                <span class="w-1.5 h-1.5 rounded-full flex-shrink-0 {{ $stokDotColor }}"></span>
+                                <span class="text-[10px] font-bold flex-1 leading-none">Stok</span>
+                                <span class="text-[10px] font-extrabold leading-none tabular-nums">
+                                    {{ $produk->stok }} {{ $produk->satuan }}
+                                </span>
+                                <span class="text-[9px] font-semibold leading-none opacity-60">({{ $stokLabel }})</span>
+                            </div>
+
                         </div>
                     </div>
                 </div>
+
 
             @empty
                 <div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400">
@@ -271,12 +302,12 @@
                 <div>
                     <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Metode
                         Pembayaran</label>
-                    <select id="select-pembayaran"
-                        onchange="pilihanMetode(this.value)"
+                    <select id="select-pembayaran" onchange="pilihanMetode(this.value)"
                         class="w-full py-2.5 pl-3 pr-8 text-sm border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white font-medium text-gray-700 transition-all duration-200">
                         <option value="">-- Pilih Metode --</option>
                         @foreach ($metodePembayaran as $metode)
-                            <option value="{{ $metode->id }}" {{ $pembayaran_id == $metode->id ? 'selected' : '' }}>{{ $metode->nama_pembayaran }}</option>
+                            <option value="{{ $metode->id }}" {{ $pembayaran_id == $metode->id ? 'selected' : '' }}>
+                                {{ $metode->nama_pembayaran }}</option>
                         @endforeach
                     </select>
                     <input type="hidden" wire:model.live="pembayaran_id" id="hidden-pembayaran">
@@ -284,128 +315,140 @@
 
                 {{-- ======= FORM PIUTANG (muncul jika pilih Piutang/Bon) ======= --}}
                 @if($isPiutang)
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 space-y-3">
-                    <p class="text-[11px] font-bold text-amber-700 uppercase tracking-widest flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        Data Piutang
-                    </p>
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 space-y-3">
+                        <p class="text-[11px] font-bold text-amber-700 uppercase tracking-widest flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            Data Piutang
+                        </p>
 
-                    {{-- Pencarian Pelanggan --}}
-                    @if(!$pelanggan_id)
-                    <div class="relative">
-                        <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Cari Pelanggan</label>
-                        <input type="text" wire:model.live.debounce.300ms="pelanggan_search"
-                            placeholder="Ketik nama / no. HP..."
-                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
-                        {{-- Hasil Pencarian --}}
-                        @if(!empty($hasil_cari_pelanggan))
-                        <div class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-                            @foreach($hasil_cari_pelanggan as $p)
-                            <button type="button" wire:click="pilihPelanggan({{ $p['id'] }}, '{{ $p['nama_pelanggan'] }}')"
-                                class="w-full text-left px-3 py-2 text-sm hover:bg-amber-50 transition-colors border-b border-gray-100 last:border-0">
-                                <span class="font-semibold text-gray-800">{{ $p['nama_pelanggan'] }}</span>
-                                @if($p['no_hp'])<span class="text-gray-400 text-xs ml-2">{{ $p['no_hp'] }}</span>@endif
-                                @if($p['alamat'])<br><span class="text-gray-400 text-xs">{{ Str::limit($p['alamat'], 40) }}</span>@endif
+                        {{-- Pencarian Pelanggan --}}
+                        @if(!$pelanggan_id)
+                            <div class="relative">
+                                <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Cari
+                                    Pelanggan</label>
+                                <input type="text" wire:model.live.debounce.300ms="pelanggan_search"
+                                    placeholder="Ketik nama / no. HP..."
+                                    class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                                {{-- Hasil Pencarian --}}
+                                @if(!empty($hasil_cari_pelanggan))
+                                    <div
+                                        class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                                        @foreach($hasil_cari_pelanggan as $p)
+                                            <button type="button"
+                                                wire:click="pilihPelanggan({{ $p['id'] }}, '{{ $p['nama_pelanggan'] }}')"
+                                                class="w-full text-left px-3 py-2 text-sm hover:bg-amber-50 transition-colors border-b border-gray-100 last:border-0">
+                                                <span class="font-semibold text-gray-800">{{ $p['nama_pelanggan'] }}</span>
+                                                @if($p['no_hp'])<span class="text-gray-400 text-xs ml-2">{{ $p['no_hp'] }}</span>@endif
+                                                @if($p['alamat'])<br><span
+                                                class="text-gray-400 text-xs">{{ Str::limit($p['alamat'], 40) }}</span>@endif
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Toggle form pelanggan baru --}}
+                            <button type="button" wire:click="toggleFormBaru"
+                                class="text-[11px] font-semibold text-amber-600 hover:text-amber-800 underline flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                {{ $show_form_baru ? 'Batal Tambah Baru' : 'Tambah Pelanggan Baru' }}
                             </button>
-                            @endforeach
-                        </div>
+
+                            @if($show_form_baru)
+                                <div class="space-y-2 pt-1">
+                                    <input type="text" wire:model="pelanggan_baru_nama" placeholder="Nama Pelanggan *"
+                                        class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                                    <input type="text" wire:model="pelanggan_baru_alamat" placeholder="Alamat (opsional)"
+                                        class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                                    <input type="text" wire:model="pelanggan_baru_no_hp" placeholder="No. HP (opsional)"
+                                        class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
+                                </div>
+                            @endif
+
+                        @else
+                            {{-- Pelanggan sudah dipilih --}}
+                            <div
+                                class="flex items-center justify-between bg-white border border-amber-200 rounded-xl px-3 py-2">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-700">{{ $pelanggan_nama }}</p>
+                                    <p class="text-[10px] text-gray-400">Pelanggan terpilih</p>
+                                </div>
+                                <button type="button" wire:click="batalPilihPelanggan" class="text-red-400 hover:text-red-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
                         @endif
-                    </div>
 
-                    {{-- Toggle form pelanggan baru --}}
-                    <button type="button" wire:click="toggleFormBaru"
-                        class="text-[11px] font-semibold text-amber-600 hover:text-amber-800 underline flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        {{ $show_form_baru ? 'Batal Tambah Baru' : 'Tambah Pelanggan Baru' }}
-                    </button>
-
-                    @if($show_form_baru)
-                    <div class="space-y-2 pt-1">
-                        <input type="text" wire:model="pelanggan_baru_nama" placeholder="Nama Pelanggan *"
-                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
-                        <input type="text" wire:model="pelanggan_baru_alamat" placeholder="Alamat (opsional)"
-                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
-                        <input type="text" wire:model="pelanggan_baru_no_hp" placeholder="No. HP (opsional)"
-                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
-                    </div>
-                    @endif
-
-                    @else
-                    {{-- Pelanggan sudah dipilih --}}
-                    <div class="flex items-center justify-between bg-white border border-amber-200 rounded-xl px-3 py-2">
+                        {{-- Uang Muka (DP) --}}
                         <div>
-                            <p class="text-xs font-bold text-gray-700">{{ $pelanggan_nama }}</p>
-                            <p class="text-[10px] text-gray-400">Pelanggan terpilih</p>
+                            <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Uang
+                                Muka / DP (isi 0 jika tidak ada)</label>
+                            <div class="relative">
+                                <span
+                                    class="absolute inset-y-0 left-3 flex items-center text-amber-500 text-sm font-bold">Rp</span>
+                                <input type="text" id="dp-display" oninput="formatDP(this)" placeholder="0"
+                                    autocomplete="off"
+                                    class="w-full pl-10 pr-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white font-bold">
+                                <input type="hidden" wire:model.live="dp" id="dp-hidden">
+                            </div>
+                            @php $dp = (int) str_replace('.', '', $this->dp);
+                            $sisa = $total_harga - $dp; @endphp
+                            @if($dp > 0 && $sisa > 0)
+                                <p class="text-[11px] text-amber-700 mt-1 font-semibold">Kekurangan: Rp
+                                    {{ number_format($sisa, 0, ',', '.') }}</p>
+                            @endif
                         </div>
-                        <button type="button" wire:click="batalPilihPelanggan" class="text-red-400 hover:text-red-600">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
-                    @endif
 
-                    {{-- Uang Muka (DP) --}}
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Uang Muka / DP (isi 0 jika tidak ada)</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-3 flex items-center text-amber-500 text-sm font-bold">Rp</span>
-                            <input type="text" id="dp-display"
-                                oninput="formatDP(this)"
-                                placeholder="0" autocomplete="off"
-                                class="w-full pl-10 pr-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white font-bold">
-                            <input type="hidden" wire:model.live="dp" id="dp-hidden">
+                        {{-- Jatuh Tempo --}}
+                        <div>
+                            <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Jatuh
+                                Tempo</label>
+                            <input type="date" wire:model.live="jatuh_tempo" min="{{ now()->format('Y-m-d') }}"
+                                class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
                         </div>
-                        @php $dp = (int)str_replace('.', '', $this->dp); $sisa = $total_harga - $dp; @endphp
-                        @if($dp > 0 && $sisa > 0)
-                        <p class="text-[11px] text-amber-700 mt-1 font-semibold">Kekurangan: Rp {{ number_format($sisa, 0, ',', '.') }}</p>
-                        @endif
                     </div>
-
-                    {{-- Jatuh Tempo --}}
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Jatuh Tempo</label>
-                        <input type="date" wire:model.live="jatuh_tempo"
-                            min="{{ now()->format('Y-m-d') }}"
-                            class="w-full px-3 py-2 text-sm border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
-                    </div>
-                </div>
                 @else
-                {{-- Input Uang Diterima (hanya tampil jika bukan piutang) --}}
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Uang
-                        Diterima</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                            <span class="text-gray-400 text-sm font-bold">Rp</span>
+                    {{-- Input Uang Diterima (hanya tampil jika bukan piutang) --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Uang
+                            Diterima</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <span class="text-gray-400 text-sm font-bold">Rp</span>
+                            </div>
+                            <input type="text" id="bayar-display" oninput="formatUang(this)" placeholder="0"
+                                autocomplete="off"
+                                class="w-full pl-11 pr-3 py-2.5 text-sm border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-bold bg-white transition-all duration-200">
+                            <input type="hidden" wire:model.live.debounce.300ms="bayar" id="bayar-hidden">
                         </div>
-                        <input type="text" id="bayar-display"
-                            oninput="formatUang(this)"
-                            placeholder="0"
-                            autocomplete="off"
-                            class="w-full pl-11 pr-3 py-2.5 text-sm border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-bold bg-white transition-all duration-200">
-                        <input type="hidden" wire:model.live.debounce.300ms="bayar" id="bayar-hidden">
                     </div>
-                </div>
                 @endif
             </div>
 
             @if(!$isPiutang)
-            <div
-                class="flex justify-between items-center mb-4 px-4 py-3 rounded-2xl font-semibold border
-                {{ $kembalian < 0 ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100' }}">
-                <span class="text-sm font-bold">Kembalian</span>
-                <span class="text-lg font-extrabold">Rp {{ number_format($kembalian, 0, ',', '.') }}</span>
-            </div>
+                <div
+                    class="flex justify-between items-center mb-4 px-4 py-3 rounded-2xl font-semibold border
+                    {{ $kembalian < 0 ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100' }}">
+                    <span class="text-sm font-bold">Kembalian</span>
+                    <span class="text-lg font-extrabold">Rp {{ number_format($kembalian, 0, ',', '.') }}</span>
+                </div>
             @endif
 
             @php
-                $dpInt = (int)str_replace('.', '', $this->dp);
+                $dpInt = (int) str_replace('.', '', $this->dp);
                 $piutangValid = $isPiutang && (!empty($pelanggan_id) || !empty($pelanggan_baru_nama)) && !empty($jatuh_tempo) && $dpInt >= 0 && $dpInt <= $total_harga;
-                $tunaiValid   = !$isPiutang && $kembalian >= 0;
-                $canProcess   = $total_harga > 0 && !empty($pembayaran_id) && !$this->hasInvalidQty() && ($piutangValid || $tunaiValid);
+                $tunaiValid = !$isPiutang && $kembalian >= 0;
+                $canProcess = $total_harga > 0 && !empty($pembayaran_id) && !$this->hasInvalidQty() && ($piutangValid || $tunaiValid);
             @endphp
-            <button wire:click="simpanTransaksi" wire:loading.attr="disabled"
-                {{ $canProcess ? '' : 'disabled' }}
-                class="w-full py-3.5 px-4 rounded-2xl text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98]
+            <button wire:click="simpanTransaksi" wire:loading.attr="disabled" {{ $canProcess ? '' : 'disabled' }} class="w-full py-3.5 px-4 rounded-2xl text-sm font-bold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-[0.98]
                     {{ $canProcess
     ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 hover:-translate-y-0.5'
     : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}">
@@ -467,6 +510,21 @@
                 let hidden = document.getElementById('bayar-hidden');
                 if (display && hidden && hidden.value === '' && @this.bayar == 0) {
                     display.value = '';
+                }
+            });
+
+            // Paksa reset visual input pencarian & dropdown kategori saat tombol Reset ditekan.
+            // Diperlukan karena morphdom Livewire kadang tidak memperbarui elemen input
+            // yang nilainya dianggap sudah sinkron oleh diffing algorithm.
+            @this.on('reset-filter-inputs', () => {
+                const searchInput = document.getElementById('search-produk');
+                const kategoriSelect = document.getElementById('dropdown-kategori');
+
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+                if (kategoriSelect) {
+                    kategoriSelect.value = '';
                 }
             });
         });
