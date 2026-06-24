@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk Cicilan - {{ $cicilan->piutang->transaksi->kode_transaksi }}</title>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; font-size: 12px; color: #000; margin: 0; padding: 10px; width: 80mm; }
+        body { font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #000; margin: 0; padding: 5px; width: 58mm; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .font-bold { font-weight: bold; }
-        .header { margin-bottom: 12px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
-        .header h1 { margin: 0; font-size: 16px; }
+        .header { margin-bottom: 10px; border-bottom: 1px dashed #000; padding-bottom: 8px; }
+        .header h1 { margin: 0; font-size: 14px; }
         .header p { margin: 2px 0; }
         .section { border-top: 1px dashed #000; padding-top: 6px; margin-top: 6px; }
         table { width: 100%; border-collapse: collapse; }

@@ -8,17 +8,17 @@
         /* CSS Khusus Printer Thermal */
         body {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
+            font-size: 11px;
             color: #000;
             margin: 0;
-            padding: 10px;
-            width: 80mm; /* Ubah ke 58mm jika printer kasir Anda ukuran kecil */
+            padding: 5px;
+            width: 58mm; /* Diubah ke 58mm untuk menyesuaikan dengan printer thermal 58mm */
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .font-bold { font-weight: bold; }
-        .header { margin-bottom: 15px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
-        .header h1 { margin: 0; font-size: 16px; }
+        .header { margin-bottom: 12px; border-bottom: 1px dashed #000; padding-bottom: 8px; }
+        .header h1 { margin: 0; font-size: 14px; }
         .header p { margin: 2px 0; }
         .content table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         .content th, .content td { padding: 4px 0; vertical-align: top; }

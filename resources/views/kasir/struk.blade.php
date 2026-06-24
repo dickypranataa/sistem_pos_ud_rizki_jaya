@@ -7,17 +7,17 @@
     <style>
         body {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
+            font-size: 11px;
             color: #000;
             margin: 0;
-            padding: 10px;
-            width: 80mm;
+            padding: 5px;
+            width: 58mm;
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .font-bold { font-weight: bold; }
-        .header { margin-bottom: 15px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
-        .header h1 { margin: 0; font-size: 16px; }
+        .header { margin-bottom: 12px; border-bottom: 1px dashed #000; padding-bottom: 8px; }
+        .header h1 { margin: 0; font-size: 14px; }
         .header p { margin: 2px 0; }
         .content table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         .content th, .content td { padding: 4px 0; vertical-align: top; }
@@ -26,7 +26,7 @@
         .total-area table { width: 100%; }
         .footer { text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px; }
         .piutang-box { border: 2px dashed #000; padding: 6px; margin: 10px 0; }
-        .piutang-box .label { font-weight: bold; font-size: 13px; text-align: center; margin-bottom: 4px; }
+        .piutang-box .label { font-weight: bold; font-size: 11px; text-align: center; margin-bottom: 4px; }
         @media print {
             .no-print { display: none !important; }
             body { width: 100%; margin: 0; padding: 0; }
