@@ -91,7 +91,7 @@ class KasirTransaksi extends Component
         $pembayaran = Pembayaran::find($this->pembayaran_id);
         $this->isPiutang = $pembayaran && str_contains(strtolower($pembayaran->nama_pembayaran), 'piutang');
 
-        if (! $this->isPiutang) {
+        if (!$this->isPiutang) {
             $this->resetPiutangState();
         }
     }
@@ -114,7 +114,7 @@ class KasirTransaksi extends Component
     // Reset filter pencarian & kategori — dipanggil dari tombol Reset di view
     public function resetFilter()
     {
-        $this->search          = '';
+        $this->search = '';
         $this->selectedKategori = '';
 
         // Dispatch event ke browser agar input DOM ikut di-reset (mencegah bug morphdom)
@@ -129,8 +129,8 @@ class KasirTransaksi extends Component
 
             return;
         }
-        $this->hasil_cari_pelanggan = Pelanggan::where('nama_pelanggan', 'like', '%'.$this->pelanggan_search.'%')
-            ->orWhere('no_hp', 'like', '%'.$this->pelanggan_search.'%')
+        $this->hasil_cari_pelanggan = Pelanggan::where('nama_pelanggan', 'like', '%' . $this->pelanggan_search . '%')
+            ->orWhere('no_hp', 'like', '%' . $this->pelanggan_search . '%')
             ->limit(6)
             ->get(['id', 'nama_pelanggan', 'alamat', 'no_hp'])
             ->toArray();
@@ -158,7 +158,7 @@ class KasirTransaksi extends Component
     // Toggle form pelanggan baru
     public function toggleFormBaru()
     {
-        $this->show_form_baru = ! $this->show_form_baru;
+        $this->show_form_baru = !$this->show_form_baru;
         if ($this->show_form_baru) {
             $this->pelanggan_id = null;
             $this->pelanggan_nama = '';
@@ -176,10 +176,10 @@ class KasirTransaksi extends Component
 
             return;
         }
-        $index = collect($this->keranjang)->search(fn ($item) => $item['produk_id'] == $produkId);
+        $index = collect($this->keranjang)->search(fn($item) => $item['produk_id'] == $produkId);
         if ($index !== false) {
             if ($this->keranjang[$index]['qty'] >= $produk->stok) {
-                session()->flash('error', 'Maksimal! Sisa stok '.$produk->nama_produk.' hanya '.$produk->stok);
+                session()->flash('error', 'Maksimal! Sisa stok ' . $produk->nama_produk . ' hanya ' . $produk->stok);
 
                 return;
             }
@@ -223,7 +223,7 @@ class KasirTransaksi extends Component
         $this->total_harga = 0;
         $itemsToRemoval = [];
 
-        if (! empty($this->keranjang)) {
+        if (!empty($this->keranjang)) {
             $productIds = collect($this->keranjang)->pluck('produk_id')->toArray();
             $dbProduks = Produk::whereIn('id', $productIds)->get()->keyBy('id');
 
@@ -243,11 +243,11 @@ class KasirTransaksi extends Component
                     $this->keranjang[$key]['qty'] = 1;
                 } elseif ($qtyInt < 0) {
                     $this->keranjang[$key]['qty'] = $qtyInt;
-                    session()->flash('error', 'Jumlah barang untuk "'.$item['nama'].'" tidak boleh minus!');
+                    session()->flash('error', 'Jumlah barang untuk "' . $item['nama'] . '" tidak boleh minus!');
                 } elseif ($qtyInt > $item['stok_asli']) {
                     $qtyInt = (int) $item['stok_asli'];
                     $this->keranjang[$key]['qty'] = $qtyInt;
-                    session()->flash('error', 'Stok terbatas! Maksimal pembelian '.$item['nama'].' adalah '.$qtyInt);
+                    session()->flash('error', 'Stok terbatas! Maksimal pembelian ' . $item['nama'] . ' adalah ' . $qtyInt);
                 }
 
                 $produk = $dbProduks->get($item['produk_id']);
@@ -260,7 +260,7 @@ class KasirTransaksi extends Component
                 }
             }
 
-            if (! empty($itemsToRemoval)) {
+            if (!empty($itemsToRemoval)) {
                 foreach ($itemsToRemoval as $key) {
                     unset($this->keranjang[$key]);
                 }
@@ -275,7 +275,7 @@ class KasirTransaksi extends Component
     // Cek qty tidak valid
     public function hasInvalidQty()
     {
-        return collect($this->keranjang)->contains(fn ($item) => (int) $item['qty'] < 1);
+        return collect($this->keranjang)->contains(fn($item) => (int) $item['qty'] < 1);
     }
 
     // Simpan Transaksi
@@ -333,7 +333,7 @@ class KasirTransaksi extends Component
                     ->orderBy('id', 'desc')
                     ->first();
                 $nomorUrut = $transaksiTerakhir ? ((int) substr($transaksiTerakhir->kode_transaksi, -5) + 1) : 1;
-                $kode = 'TRX-'.now()->format('Ymd').'-'.str_pad($nomorUrut, 5, '0', STR_PAD_LEFT);
+                $kode = 'TRX-' . now()->format('Ymd') . '-' . str_pad($nomorUrut, 5, '0', STR_PAD_LEFT);
 
                 $bayarBersih = $this->isPiutang ? 0 : (int) str_replace('.', '', $this->bayar);
                 $kembalianBersih = $this->isPiutang ? 0 : $this->kembalian;
@@ -356,8 +356,8 @@ class KasirTransaksi extends Component
 
                 foreach ($this->keranjang as $item) {
                     $produk = $dbProduks->get($item['produk_id']);
-                    if (! $produk || $item['qty'] > $produk->stok) {
-                        throw new \Exception('Gagal! Stok "'.($produk->nama_produk ?? 'Barang').'" tidak mencukupi.');
+                    if (!$produk || $item['qty'] > $produk->stok) {
+                        throw new \Exception('Gagal! Stok "' . ($produk->nama_produk ?? 'Barang') . '" tidak mencukupi.');
                     }
                     $hargaAkurat = (int) $this->getHargaAktif($produk);
                     DetailTransaksi::create([
@@ -377,7 +377,7 @@ class KasirTransaksi extends Component
                         'tipe' => 'sale',
                         'jumlah' => -$item['qty'],
                         'stok_akhir' => $produk->stok,
-                        'keterangan' => 'Penjualan: '.$kode,
+                        'keterangan' => 'Penjualan: ' . $kode,
                     ]);
                 }
 
@@ -386,7 +386,7 @@ class KasirTransaksi extends Component
                     $dp = (int) str_replace('.', '', $this->dp);
 
                     // Buat atau gunakan pelanggan yang ada
-                    if (! empty($this->pelanggan_baru_nama) && empty($this->pelanggan_id)) {
+                    if (!empty($this->pelanggan_baru_nama) && empty($this->pelanggan_id)) {
                         $pelanggan = Pelanggan::create([
                             'nama_pelanggan' => trim($this->pelanggan_baru_nama),
                             'alamat' => trim($this->pelanggan_baru_alamat),
@@ -413,11 +413,26 @@ class KasirTransaksi extends Component
 
             $urlStruk = route('kasir.transaksi.cetak', $transaksiBerhasil->id);
 
-            $this->reset(['keranjang', 'total_harga', 'bayar', 'kembalian', 'pembayaran_id',
-                'search', 'selectedKategori', 'tipe_harga', 'isPiutang', 'pelanggan_id', 'pelanggan_nama',
-                'pelanggan_search', 'dp', 'show_form_baru',
-                'pelanggan_baru_nama', 'pelanggan_baru_alamat', 'pelanggan_baru_no_hp',
-                'hasil_cari_pelanggan']);
+            $this->reset([
+                'keranjang',
+                'total_harga',
+                'bayar',
+                'kembalian',
+                'pembayaran_id',
+                'search',
+                'selectedKategori',
+                'tipe_harga',
+                'isPiutang',
+                'pelanggan_id',
+                'pelanggan_nama',
+                'pelanggan_search',
+                'dp',
+                'show_form_baru',
+                'pelanggan_baru_nama',
+                'pelanggan_baru_alamat',
+                'pelanggan_baru_no_hp',
+                'hasil_cari_pelanggan'
+            ]);
             $this->tipe_harga = 'retail';
             $this->jatuh_tempo = now()->addDays(14)->format('Y-m-d');
 
@@ -435,32 +450,32 @@ class KasirTransaksi extends Component
         $query = Produk::with('kategori');
 
         // Filter berdasarkan kategori (dropdown)
-        if (! empty($this->selectedKategori)) {
+        if (!empty($this->selectedKategori)) {
             $query->where('kategori_id', $this->selectedKategori);
         }
 
         // Filter berdasarkan pencarian nama / SKU
-        if (! empty($this->search)) {
-            $term = '%'.$this->search.'%';
+        if (!empty($this->search)) {
+            $term = '%' . $this->search . '%';
             $query->where(function ($q) use ($term) {
                 $q->where('nama_produk', 'like', $term)
-                  ->orWhere('sku', 'like', $term);
+                    ->orWhere('sku', 'like', $term);
             });
         }
 
-        $produks          = $query->latest()->limit(24)->get();
-        $kategoris        = Kategori::orderBy('nama_kategori')->get();
+        $produks = $query->latest()->limit(24)->get();
+        $kategoris = Kategori::orderBy('nama_kategori')->get();
         $metodePembayaran = Pembayaran::all();
 
         return view('livewire.kasir-transaksi', [
-            'produks'          => $produks,
-            'kategoris'        => $kategoris,
+            'produks' => $produks,
+            'kategoris' => $kategoris,
             'metodePembayaran' => $metodePembayaran,
         ])->layout('layouts.kasir', [
-            'hideSidebar'  => true,
-            'hideNavbar'   => true,
-            'hideFooter'   => true,
-            'isFullScreen' => true,
-        ]);
+                    'hideSidebar' => true,
+                    'hideNavbar' => true,
+                    'hideFooter' => true,
+                    'isFullScreen' => true,
+                ]);
     }
 }

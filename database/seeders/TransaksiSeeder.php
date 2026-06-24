@@ -33,23 +33,23 @@ class TransaksiSeeder extends Seeder
         
         $pembayaranIds = Pembayaran::pluck('id')->toArray();
 
-        $pembayaranIds = [1,2,3];
+        // $pembayaranIds = [1,2,3];
 
         if (empty($produks) || empty($userIds) || empty($pembayaranIds)) {
             $this->command->info("Gagal: Pastikan tabel produk, user dan pembayaran sudah terisi");
             return;
         }
 
-        $this->command->info('Memulai simulasi 7.000 Transaksi untuk Machine Learning...');
-        $this->command->info('Mohon tunggu, ini mungkin memakan waktu 1-2 menit...');
+        $this->command->info('Memulai simulasi 100 Transaksi...');
+        $this->command->info('Mohon tunggu...');
 
         DB::beginTransaction();
         try {
-            $countTransaksi = 7000;
-            //perulangan sesuai dengan jumlah transaksi = 7000
+            $countTransaksi = 100;
+            //perulangan sesuai dengan jumlah transaksi = 100
             for ($i=1; $i <= $countTransaksi; $i++) {
-                //membuat tanggal transaksi acak 2 tahun sampai sekarang
-                $waktu = $faker->dateTimeBetween('-2 year', 'now')->setTime($faker->randomElement($hours), $faker->randomElement($minutes), $faker->randomElement($seconds));
+                //membuat tanggal transaksi acak 7 hari sampai sekarang
+                $waktu = $faker->dateTimeBetween('-7 days', 'now')->setTime($faker->randomElement($hours), $faker->randomElement($minutes), $faker->randomElement($seconds));
                 //menambil tipe harga secara acak
                 $tipe_harga = $faker->randomElement(['retail', 'semi_grosir', 'grosir']);
 
@@ -132,7 +132,7 @@ class TransaksiSeeder extends Seeder
             }
 
             DB::commit();
-            $this->command->info("Simulasi 7.000 Transaksi Selesai!");
+            $this->command->info("Simulasi 100 Transaksi Selesai!");
 
             
         } catch (\Exception $e) {

@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : route('kasir.dashboard') }}">
                         <img src="{{ asset('images/logo_udrj.png') }}"
                             class="block h-9 w-auto fill-current text-gray-800" alt="Logo">
                     </a>

@@ -33,15 +33,7 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        {{-- Remember Me --}}
-        <div>
-            <label for="remember_me" class="inline-flex items-center cursor-pointer gap-2.5">
-                <input id="remember_me" type="checkbox"
-                    class="w-4.5 h-4.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                    name="remember">
-                <span class="text-sm text-gray-600 select-none">Ingat saya di perangkat ini</span>
-            </label>
-        </div>
+
 
         {{-- Submit & Links --}}
         <div class="flex items-center justify-end pt-4">

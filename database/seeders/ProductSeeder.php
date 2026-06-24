@@ -28,6 +28,25 @@ class ProductSeeder extends Seeder
 
         fgetcsv($handle, 1000, $separator); // Lewati Header
 
+        // Scan folder storage produk untuk mencocokkan gambar secara dinamis berdasarkan nama produk
+        $produkStoragePath = public_path('storage/produk');
+        $availableImages = [];
+        if (File::exists($produkStoragePath)) {
+            $files = File::files($produkStoragePath);
+            foreach ($files as $file) {
+                $filename = $file->getFilename();
+                $nameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+                // Lewati file yang memiliki nama acak/panjang (seperti hash upload default Laravel)
+                if (strlen($nameWithoutExt) < 30) {
+                    $availableImages[strtolower($nameWithoutExt)] = 'produk/' . $filename;
+                }
+            }
+            // Urutkan kata kunci dari terpanjang ke terpendek agar pencocokan lebih spesifik
+            uksort($availableImages, function($a, $b) {
+                return strlen($b) - strlen($a);
+            });
+        }
+
         DB::beginTransaction();
         try {
             $count = 0;
@@ -41,40 +60,17 @@ class ProductSeeder extends Seeder
                 $category = Kategori::firstOrCreate(['nama_kategori' => $categoryName]);
 
                 // ==========================================
-                // 2. LOGIKA GAMBAR (KATA KUNCI & NULLABLE)
+                // 2. LOGIKA GAMBAR BERDASARKAN NAMA PRODUK
                 // ==========================================
-                $lowerCategory = strtolower($categoryName);
-                $imagePath = null; // Default kosong (NULL)
+                $productName = trim($row[2] ?? 'Tanpa Nama');
+                $cleanProductName = preg_replace('/[^a-z0-9]/', '', strtolower($productName));
+                $imagePath = null;
 
-                // Daftar mapping kata kunci kategori -> nama file foto
-                $imageMap = [
-                    'slang'     => 'slang.jpg',
-                    'difuser'   => 'difuser.jpg',
-                    'diamond'   => 'diamondwheelbosh.jpg',
-                    'dcota'     => 'dcota.jpg',
-                    'corong'    => 'corongtalanghitam.jpg',
-                    'pilok'     => 'catpilok.jpg',
-                    'avian'     => 'catavian.jpg',
-                    'casing'    => 'casingcover.jpg',
-                    'bearing'   => 'bearing.jpg',
-                    'baud'      => 'baud.jpg',
-                ];
-
-                // Pencocokan kata kunci
-                foreach ($imageMap as $keyword => $filename) {
-                    if (str_contains($lowerCategory, $keyword)) {
-                        $imagePath = 'storage/produk/' . $filename;
+                // Cari kecocokan kata kunci nama file di dalam nama produk
+                foreach ($availableImages as $keyword => $path) {
+                    if (str_contains($cleanProductName, strtolower($keyword))) {
+                        $imagePath = $path;
                         break;
-                    }
-                }
-
-                // Pencocokan nama persis (jika file diunggah belakangan)
-                if ($imagePath === null) {
-                    $cleanImageName = preg_replace('/[^a-z0-9]/', '', $lowerCategory);
-                    $potentialFile = 'storage/produk/' . $cleanImageName . '.jpg';
-                    
-                    if (File::exists(public_path($potentialFile))) {
-                        $imagePath = $potentialFile;
                     }
                 }
                 // ==========================================
@@ -87,7 +83,7 @@ class ProductSeeder extends Seeder
                 $discountPercent  = $this->parseNumber($row[5] ?? 0); 
                 $priceRetail      = $this->parseNumber($row[7] ?? 0); 
 
-                // --- LOGIKA PERBAIKAN HARGA (SELISIH 2000) ---
+                // --- LOGIKA PERBAIKAN HARGA (SELISIH 2500) ---
 
                 // A. Hitung Modal BERSIH (Netto)
                 if ($discountPercent > 100) $discountPercent = 0; 
@@ -100,19 +96,19 @@ class ProductSeeder extends Seeder
                     $priceRetail = $netPurchasePrice * 1.30;
                 }
 
-                // C. Terapkan Selisih Rp 2.000 antar level
-                $priceSemi      = $priceRetail - 2000;
-                $priceWholesale = $priceSemi - 2000;
+                // C. Terapkan Selisih Rp 2.500 antar level
+                $priceSemi      = $priceRetail - 2500;
+                $priceWholesale = $priceSemi - 2500;
 
                 // D. PROTEKSI ANTI RUGI (WAJIB ADA)
                 $minProfitMargin = 1.05; // Minimal untung 5%
                 $minWholesalePrice = $netPurchasePrice * $minProfitMargin;
 
                 if ($priceWholesale < $minWholesalePrice) {
-                    // Jika dikurangi 4000 ternyata rugi, kita naikkan dari bawah
+                    // Jika dikurangi 5000 ternyata rugi, kita naikkan dari bawah
                     $priceWholesale = $minWholesalePrice;       // Grosir diset ke Modal + 5%
-                    $priceSemi      = $priceWholesale + 2000;   // Semi Grosir naik 2000 dari Grosir
-                    $priceRetail    = $priceSemi + 2000;        // Retail naik 2000 dari Semi Grosir
+                    $priceSemi      = $priceWholesale + 2500;   // Semi Grosir naik 2500 dari Grosir
+                    $priceRetail    = $priceSemi + 2500;        // Retail naik 2500 dari Semi Grosir
                 }
 
                 // Simpan
@@ -131,7 +127,7 @@ class ProductSeeder extends Seeder
                 $count++;
             }
             DB::commit();
-            $this->command->info("Berhasil! $count produk diimpor dengan selisih harga Rp2.000 dan mapping gambar dinamis.");
+            $this->command->info("Berhasil! $count produk diimpor dengan selisih harga Rp2.500 dan mapping gambar dinamis.");
         } catch (\Exception $e) {
             DB::rollBack();
             $this->command->error("Gagal: " . $e->getMessage());

@@ -16,8 +16,7 @@ class PembayaranSeeder extends Seeder
         //
         $pembayaran = [
             ['nama_pembayaran' => 'Tunai'],
-            ['nama_pembayaran' => 'QRIS'],
-            ['nama_pembayaran' => 'Transfer'],
+            ['nama_pembayaran' => 'Non Tunai'],
         ];
         Pembayaran::insert($pembayaran);
     }

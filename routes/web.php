@@ -1,6 +1,6 @@
 <?php
 
-// ProfileController dihapus — halaman /profile tidak digunakan dalam sistem ini
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 //admin
@@ -87,8 +87,9 @@ Route::middleware('auth')->group(function () {
         return redirect()->back();
     })->name('notifikasi.readAll');
 
-    // Route /profile dihapus — halaman profil tidak digunakan dalam sistem ini.
-    // Pengelolaan user (nama, email, password) dilakukan oleh Admin melalui /admin/user.
+    // Halaman Profil (Dapat diakses oleh admin dan kasir)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 require __DIR__.'/auth.php';
