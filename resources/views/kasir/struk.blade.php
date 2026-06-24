@@ -77,7 +77,13 @@
     @if($piutang)
     {{-- ===== STRUK PIUTANG ===== --}}
     <div class="piutang-box">
-        <div class="label">★ BELUM LUNAS ★</div>
+        <div class="label">
+            @if($piutang->status === 'lunas')
+                ★ SUDAH LUNAS ★
+            @else
+                ★ BELUM LUNAS ★
+            @endif
+        </div>
         <table style="width:100%">
             <tr>
                 <td>Pelanggan</td>

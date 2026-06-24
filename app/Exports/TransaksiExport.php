@@ -28,7 +28,7 @@ class TransaksiExport implements FromCollection, WithHeadings, WithStyles
     public function collection()
     {
         // 1. Ambil data TRANSAKSI beserta DETAILNYA
-        $transaksis = Transaksi::with(['user', 'pembayaran', 'detail.produk'])
+        $transaksis = Transaksi::with(['user', 'pembayaran', 'detail.produk', 'piutang.pelanggan'])
             ->when($this->filterBulan, function ($query) {
                 $waktu = explode('-', $this->filterBulan);
                 if (count($waktu) == 2) {
@@ -63,7 +63,11 @@ class TransaksiExport implements FromCollection, WithHeadings, WithStyles
                 // Info Uang di letakkan di baris induk
                 $trx->total_harga,
                 $trx->bayar,
-                $trx->kembalian
+                $trx->kembalian,
+
+                // Info Pelanggan & Status Piutang
+                $trx->piutang ? ($trx->piutang->pelanggan->nama_pelanggan ?? '-') : '-',
+                $trx->piutang ? ($trx->piutang->status === 'lunas' ? 'Lunas' : 'Belum Lunas') : '-'
             ]);
 
             // Simpan nomor baris ini untuk diwarnai tebal nanti
@@ -87,13 +91,17 @@ class TransaksiExport implements FromCollection, WithHeadings, WithStyles
                     // Kosongkan info total nota
                     $item->subtotal,
                     '', // Uang Bayar kosong
-                    ''  // Kembalian kosong
+                    '', // Kembalian kosong
+
+                    // Kosongkan info piutang
+                    '',
+                    ''
                 ]);
                 $currentRow++;
             }
             
             // Tambahkan 1 baris kosong sebagai pemisah antar nota
-            $dataExcel->push(['', '', '', '', '', '', '', '', '', '', '']);
+            $dataExcel->push(['', '', '', '', '', '', '', '', '', '', '', '', '']);
             $currentRow++;
         }
 
@@ -118,22 +126,26 @@ class TransaksiExport implements FromCollection, WithHeadings, WithStyles
             // Header Keuangan
             'Subtotal / Total Nota (Rp)',
             'Uang Bayar (Rp)',
-            'Kembalian (Rp)'
+            'Kembalian (Rp)',
+            
+            // Header Piutang
+            'Pelanggan',
+            'Status Piutang'
         ];
     }
 
     // Fungsi sakti untuk mewarnai Excel (Membuatnya terlihat seperti struk bertingkat)
     public function styles(Worksheet $sheet)
     {
-        // 1. Warnai baris pertama (Judul Kolom)
-        $sheet->getStyle('A1:K1')->applyFromArray([
+        // 1. Warnai baris pertama (Judul Kolom) - diubah ke M1 karena ada 13 kolom (A-M)
+        $sheet->getStyle('A1:M1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
             'fill' => ['fillType' => 'solid', 'color' => ['argb' => 'FF1F2937']], // Warna abu-abu gelap
         ]);
 
         // 2. Warnai semua Baris Induk (Kode Nota) agar tebal dan menonjol
         foreach ($this->rowWarna as $rowNumber) {
-            $sheet->getStyle('A' . $rowNumber . ':K' . $rowNumber)->applyFromArray([
+            $sheet->getStyle('A' . $rowNumber . ':M' . $rowNumber)->applyFromArray([
                 'font' => ['bold' => true],
                 'fill' => ['fillType' => 'solid', 'color' => ['argb' => 'FFF3F4F6']], // Warna abu-abu terang
             ]);

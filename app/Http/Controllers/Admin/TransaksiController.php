@@ -26,7 +26,7 @@ class TransaksiController extends Controller
         $filterBulan = $request->input('filter_bulan');
         $filterTanggal = $request->input('filter_tanggal');
 
-        $transaksi = Transaksi::with(['user', 'pembayaran'])
+        $transaksi = Transaksi::with(['user', 'pembayaran', 'piutang.pelanggan'])
             ->when($filterBulan, function ($query) use ($filterBulan) {
                 $waktu = explode('-', $filterBulan);
                 if (count($waktu) == 2) {
@@ -46,7 +46,7 @@ class TransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran'])->findOrFail($id);
+        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran', 'piutang.pelanggan'])->findOrFail($id);
 
 
         return view('admin.transaksi.show', compact('transaksi'));
@@ -54,7 +54,7 @@ class TransaksiController extends Controller
 
     public function cetakStruk($id)
     {
-        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran'])->findOrFail($id);
+        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran', 'piutang.pelanggan'])->findOrFail($id);
 
         return view('admin.transaksi.cetak', compact('transaksi'));
     }

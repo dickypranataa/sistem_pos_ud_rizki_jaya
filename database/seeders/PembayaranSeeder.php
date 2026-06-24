@@ -13,11 +13,14 @@ class PembayaranSeeder extends Seeder
      */
     public function run(): void
     {
-        //
         $pembayaran = [
-            ['nama_pembayaran' => 'Tunai'],
-            ['nama_pembayaran' => 'Non Tunai'],
+            'Tunai',
+            'Non Tunai',
+            'Piutang',
         ];
-        Pembayaran::insert($pembayaran);
+
+        foreach ($pembayaran as $nama) {
+            Pembayaran::firstOrCreate(['nama_pembayaran' => $nama]);
+        }
     }
 }

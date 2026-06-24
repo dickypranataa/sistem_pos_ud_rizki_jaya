@@ -58,6 +58,27 @@
         </div>
     </div>
 
+    @if($transaksi->piutang)
+    <div class="px-6 py-4 border-b border-gray-100 bg-amber-50/50 flex flex-col sm:flex-row justify-between gap-4">
+        <div>
+            <h4 class="text-xs font-bold text-amber-700 uppercase tracking-widest mb-1.5">Informasi Piutang Pelanggan</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-sm">
+                <p class="text-gray-600 font-medium">Nama Pelanggan: <span class="font-bold text-gray-900">{{ $transaksi->piutang->pelanggan->nama_pelanggan }}</span></p>
+                <p class="text-gray-600 font-medium">No. HP: <span class="font-bold text-gray-900">{{ $transaksi->piutang->pelanggan->no_hp ?? '-' }}</span></p>
+                <p class="text-gray-600 font-medium">Jatuh Tempo: <span class="font-bold {{ \Carbon\Carbon::parse($transaksi->piutang->jatuh_tempo)->isPast() && $transaksi->piutang->status === 'belum_lunas' ? 'text-red-600' : 'text-gray-900' }}">{{ \Carbon\Carbon::parse($transaksi->piutang->jatuh_tempo)->format('d M Y') }}</span></p>
+                <p class="text-gray-600 font-medium">Sisa Tagihan: <span class="font-bold text-red-600">Rp {{ number_format($transaksi->piutang->sisa_tagihan, 0, ',', '.') }}</span></p>
+            </div>
+        </div>
+        <div class="flex items-center">
+            @if($transaksi->piutang->status === 'lunas')
+                <span class="px-3 py-1.5 text-xs font-bold bg-emerald-100 text-emerald-700 rounded-full border border-emerald-200">SUDAH LUNAS</span>
+            @else
+                <span class="px-3 py-1.5 text-xs font-bold bg-amber-100 text-amber-700 rounded-full border border-amber-200">BELUM LUNAS</span>
+            @endif
+        </div>
+    </div>
+    @endif
+
     {{-- Items Table --}}
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">

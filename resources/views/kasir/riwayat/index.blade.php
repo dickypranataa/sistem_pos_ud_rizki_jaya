@@ -92,7 +92,19 @@
                                 <span
                                     class="font-mono text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">{{ $transaksis->kode_transaksi }}</span>
                             </td>
-                            <td class="px-5 py-3 text-gray-600 text-xs">{{ $transaksis->pembayaran->nama_pembayaran }}</td>
+                            <td class="px-5 py-3 text-gray-600 text-xs">
+                                <div class="font-medium">{{ $transaksis->pembayaran->nama_pembayaran }}</div>
+                                @if($transaksis->piutang)
+                                    <div class="mt-1">
+                                        @if($transaksis->piutang->status === 'lunas')
+                                            <span class="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded">Lunas</span>
+                                        @else
+                                            <span class="px-1.5 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 rounded">Belum Lunas</span>
+                                        @endif
+                                        <span class="text-gray-400 block text-[10px] mt-0.5">({{ $transaksis->piutang->pelanggan->nama_pelanggan }})</span>
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-5 py-3">
                                 <span class="text-blue-600 font-medium text-xs">{{ $transaksis->user->name }}</span>
                             </td>

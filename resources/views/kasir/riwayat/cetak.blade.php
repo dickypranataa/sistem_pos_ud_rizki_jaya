@@ -26,6 +26,8 @@
         .total-area { border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
         .total-area table { width: 100%; }
         .footer { text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px; }
+        .piutang-box { border: 2px dashed #000; padding: 6px; margin: 10px 0; }
+        .piutang-box .label { font-weight: bold; font-size: 11px; text-align: center; margin-bottom: 4px; }
         
         /* Menyembunyikan tombol saat struk di-print */
         @media print {
@@ -82,6 +84,57 @@
         </table>
     </div>
 
+    @php $piutang = $transaksi->piutang; @endphp
+
+    @if($piutang)
+    {{-- ===== STRUK PIUTANG ===== --}}
+    <div class="piutang-box">
+        <div class="label">
+            @if($piutang->status === 'lunas')
+                ★ SUDAH LUNAS ★
+            @else
+                ★ BELUM LUNAS ★
+            @endif
+        </div>
+        <table style="width:100%">
+            <tr>
+                <td>Pelanggan</td>
+                <td class="text-right font-bold">{{ $piutang->pelanggan->nama_pelanggan }}</td>
+            </tr>
+            @if($piutang->pelanggan->alamat)
+            <tr>
+                <td>Alamat</td>
+                <td class="text-right">{{ $piutang->pelanggan->alamat }}</td>
+            </tr>
+            @endif
+        </table>
+    </div>
+
+    <div class="total-area">
+        <table>
+            <tr>
+                <td class="font-bold">Total Belanja</td>
+                <td class="font-bold text-right">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>
+            </tr>
+            @php $dp = $transaksi->total_harga - $piutang->sisa_tagihan; @endphp
+            @if($dp > 0)
+            <tr>
+                <td>DP / Uang Muka</td>
+                <td class="text-right">Rp {{ number_format($dp, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            <tr>
+                <td class="font-bold">Sisa Tagihan</td>
+                <td class="font-bold text-right">Rp {{ number_format($piutang->sisa_tagihan, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>Jatuh Tempo</td>
+                <td class="text-right">{{ \Carbon\Carbon::parse($piutang->jatuh_tempo)->format('d M Y') }}</td>
+            </tr>
+        </table>
+    </div>
+    @else
+    {{-- ===== STRUK TUNAI ===== --}}
     <div class="total-area">
         <table>
             <tr>
@@ -98,6 +151,7 @@
             </tr>
         </table>
     </div>
+    @endif
 
     <div class="footer">
         <p>Terima Kasih Telah Berbelanja</p>
