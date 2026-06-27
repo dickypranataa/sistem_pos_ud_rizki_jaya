@@ -55,10 +55,15 @@ class KategoriController extends Controller
     }
 
     public function destroy($id){
-        $kategori = Kategori::find($id);
+        $kategori = Kategori::findOrFail($id);
+
+        if ($kategori->produk()->exists()) {
+            return redirect()->route('admin.kategori.index')->with('error', 'Kategori "' . $kategori->nama_kategori . '" tidak dapat dihapus karena masih digunakan oleh produk lain.');
+        }
+
         $kategori->delete();
 
-        return redirect()->route('admin.kategori.index');
+        return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil dihapus');
     }
 
 }

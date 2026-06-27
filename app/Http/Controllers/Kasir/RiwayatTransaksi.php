@@ -46,14 +46,17 @@ class RiwayatTransaksi extends Controller
 }
 
     public function show($id){
-        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran', 'piutang.pelanggan'])->findOrFail($id);
-        
+        $transaksi = Transaksi::where('user_id', Auth::id())
+            ->with(['detail.produk', 'user', 'pembayaran', 'piutang.pelanggan'])
+            ->findOrFail($id);
         
         return view('kasir.riwayat.show', compact('transaksi'));
     }
 
     public function cetakStruk($id){
-        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran', 'piutang.pelanggan'])->findOrFail($id);
+        $transaksi = Transaksi::where('user_id', Auth::id())
+            ->with(['detail.produk', 'user', 'pembayaran', 'piutang.pelanggan'])
+            ->findOrFail($id);
 
         return view('kasir.riwayat.cetak', compact('transaksi'));
     }
@@ -77,7 +80,7 @@ class RiwayatTransaksi extends Controller
             $namaFile .= '_Semua';
         }
 
-        return Excel::download(new TransaksiExport($filterBulan, $filterTanggal), $namaFile . '.xlsx');
+        return Excel::download(new TransaksiExport($filterBulan, $filterTanggal, Auth::id()), $namaFile . '.xlsx');
     }
 
 }

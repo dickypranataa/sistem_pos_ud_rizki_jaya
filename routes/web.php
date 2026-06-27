@@ -23,17 +23,25 @@ use App\Http\Controllers\Kasir\PiutangKasirController;
 
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        if (auth()->user()->role === 'kasir') {
+            return redirect()->route('kasir.dashboard');
+        }
+    }
     return redirect()->route('login');
 });
 
-Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group(function (){
-    
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('produk', ProdukController::class);
     Route::resource('kategori', KategoriController::class);
     Route::resource('user', UserController::class);
     Route::resource('pembayaran', PembayaranController::class);
-    
+
     Route::get('riwayat/export-pdf', [RiwayatStokController::class, 'exportPdf'])->name('riwayat.export_pdf');
     Route::get('riwayat', [RiwayatStokController::class, 'index'])->name('riwayat.index');
     //koreksi stok
@@ -92,4 +100,4 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

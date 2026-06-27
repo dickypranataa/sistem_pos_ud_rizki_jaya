@@ -15,17 +15,17 @@ class UserSeeder extends Seeder
     {
         //
         User::create([
-            'name'=>'admin',
-            'email'=>'admin@gmail.com',
-            'password'=>bcrypt('opwarnet09'),
-            'role'=>'admin',
+            'name' => 'admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
         ]);
 
         User::create([
-            'name'=>'hosun',
-            'email'=>'hosun@gmail.com',
-            'password'=>bcrypt('opwarnet09'),
-            'role'=>'kasir',
+            'name' => 'hosun',
+            'email' => 'hosun@gmail.com',
+            'password' => bcrypt('password'),
+            'role' => 'kasir',
         ]);
     }
 }

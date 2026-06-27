@@ -21,7 +21,7 @@ class KoreksiStokController extends Controller
        $request->validate([
             'produk_id' => 'required',
             'jenis_koreksi' => 'required|in:restock,sale,correction_plus,correction_minus',
-            'jumlah' => 'required|numeric|min:1',
+            'jumlah' => 'required|integer|min:1',
             'keterangan' => 'required|string|max:255',
         ], [
             'produk_id.required' => 'Pilih produk terlebih dahulu.',

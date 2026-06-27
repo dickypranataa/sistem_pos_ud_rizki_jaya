@@ -17,12 +17,14 @@ class TransaksiExport implements FromCollection, WithHeadings, WithStyles
 
     protected $filterBulan;
     protected $filterTanggal;
+    protected $userId;
     protected $rowWarna = []; // Untuk menyimpan nomor baris mana saja yang akan diwarnai (Baris Induk)
 
-    public function __construct($filterBulan = null, $filterTanggal = null)
+    public function __construct($filterBulan = null, $filterTanggal = null, $userId = null)
     {
         $this->filterBulan = $filterBulan;
         $this->filterTanggal = $filterTanggal;
+        $this->userId = $userId;
     }
 
     public function collection()
@@ -38,6 +40,9 @@ class TransaksiExport implements FromCollection, WithHeadings, WithStyles
             })
             ->when($this->filterTanggal, function ($query) {
                 $query->whereDate('waktu_transaksi', $this->filterTanggal);
+            })
+            ->when($this->userId, function ($query) {
+                $query->where('user_id', $this->userId);
             })
             ->orderBy('waktu_transaksi', 'asc')
             ->get();

@@ -68,7 +68,7 @@ class PiutangKasirController extends Controller
         }
 
         $request->validate([
-            'jumlah_bayar' => 'required|numeric|min:1|max:' . $piutang->sisa_tagihan,
+            'jumlah_bayar' => 'required|integer|min:1|max:' . $piutang->sisa_tagihan,
             'tanggal_bayar' => 'required|date',
         ], [
             'jumlah_bayar.max' => 'Jumlah bayar melebihi sisa tagihan (Rp ' . number_format($piutang->sisa_tagihan, 0, ',', '.') . ').',
