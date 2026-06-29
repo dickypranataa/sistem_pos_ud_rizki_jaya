@@ -57,8 +57,15 @@ class UserController extends Controller
     }
 
     public function destroy($id){
-        $users = User::find($id);
-        $users->delete();
+        $user = User::find($id);
+
+        // Cek apakah user sudah pernah membuat transaksi
+        if ($user->transaksi()->exists()) {
+            return redirect()->route('admin.user.index')
+                ->with('error', 'User "' . $user->name . '" tidak dapat dihapus karena sudah memiliki riwayat transaksi.');
+        }
+
+        $user->delete();
 
         return redirect()->route('admin.user.index')->with('success', 'User berhasil dihapus');
     }

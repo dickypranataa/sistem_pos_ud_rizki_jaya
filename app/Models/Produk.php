@@ -31,4 +31,10 @@ class Produk extends Model
     {
         return $this->hasMany(Transaksi::class);
     }
+
+    //1 produk bisa muncul di banyak detail transaksi
+    public function detailTransaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class);
+    }
 }

@@ -368,6 +368,7 @@ class KasirTransaksi extends Component
                         'subtotal' => $hargaAkurat * $item['qty'],
                     ]);
                     $produk->decrement('stok', $item['qty']);
+                    // Kirim notifikasi stok kritis ke semua user (admin & kasir)
                     if ($produk->stok <= 2) {
                         Notification::send(User::all(), new StokNotification($produk));
                     }

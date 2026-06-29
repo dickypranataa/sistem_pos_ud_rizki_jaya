@@ -35,8 +35,15 @@ class PembayaranController extends Controller
     }
 
     public function destroy($id){
-        $pembayarans = Pembayaran::find($id);
-        $pembayarans->delete();
+        $pembayaran = Pembayaran::find($id);
+
+        // Cek apakah metode pembayaran sudah digunakan di transaksi
+        if ($pembayaran->transaksi()->exists()) {
+            return redirect()->route('admin.pembayaran.index')
+                ->with('error', 'Metode pembayaran "' . $pembayaran->nama_pembayaran . '" tidak dapat dihapus karena sudah digunakan pada riwayat transaksi.');
+        }
+
+        $pembayaran->delete();
 
         return redirect()->route('admin.pembayaran.index')->with('success', 'Pembayaran berhasil dihapus');
     }

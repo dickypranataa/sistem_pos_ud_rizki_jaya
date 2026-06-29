@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
+use App\Models\RiwayatStok;
 use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
@@ -136,14 +137,32 @@ class ProdukController extends Controller
 
     public function destroy($id){
         $produk = Produk::find($id);
-        
+
+        if (!$produk) {
+            return redirect()->route('admin.produk.index')
+                ->with('error', 'Produk tidak ditemukan.');
+        }
+
+        // Cek apakah produk sudah pernah dijual dalam transaksi
+        if ($produk->detailTransaksi()->exists()) {
+            return redirect()->route('admin.produk.index')
+                ->with('error', 'Produk "' . $produk->nama_produk . '" tidak dapat dihapus karena sudah tercatat dalam riwayat transaksi.');
+        }
+
+        // Cek apakah produk sudah memiliki riwayat stok
+        $jumlahRiwayat = RiwayatStok::where('produk_id', $produk->id)->count();
+        if ($jumlahRiwayat > 0) {
+            return redirect()->route('admin.produk.index')
+                ->with('error', 'Produk "' . $produk->nama_produk . '" tidak dapat dihapus karena memiliki ' . $jumlahRiwayat . ' riwayat stok yang tercatat. Hapus riwayat stok terlebih dahulu atau arsipkan produk ini.');
+        }
+
         // HAPUS GAMBAR FISIK SAAT PRODUK DIHAPUS
         if ($produk->gambar && Storage::disk('public')->exists($produk->gambar)) {
             Storage::disk('public')->delete($produk->gambar);
         }
 
         $produk->delete();
-        
+
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus');
     }
 }

@@ -27,7 +27,10 @@ class KasirController extends Controller
 
     public function cetakStruk($id)
     {
-        $transaksi = Transaksi::with(['detail.produk', 'user', 'pembayaran'])->findOrFail($id);
+        // Kasir hanya boleh cetak struk milik transaksinya sendiri
+        $transaksi = Transaksi::where('user_id', Auth::user()->id)
+            ->with(['detail.produk', 'user', 'pembayaran'])
+            ->findOrFail($id);
         return view('kasir.struk', compact('transaksi'));
     }
 }

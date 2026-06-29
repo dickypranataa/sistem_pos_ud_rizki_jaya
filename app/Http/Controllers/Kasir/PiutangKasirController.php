@@ -8,6 +8,7 @@ use App\Models\PembayaranPiutang;
 use App\Models\RiwayatPerpanjanganTempo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PiutangKasirController extends Controller
 {
@@ -74,24 +75,40 @@ class PiutangKasirController extends Controller
             'jumlah_bayar.max' => 'Jumlah bayar melebihi sisa tagihan (Rp ' . number_format($piutang->sisa_tagihan, 0, ',', '.') . ').',
         ]);
 
-        PembayaranPiutang::create([
-            'piutang_id'    => $piutang->id,
-            'user_id'       => Auth::id(),
-            'jumlah_bayar'  => $request->jumlah_bayar,
-            'tanggal_bayar' => $request->tanggal_bayar,
-        ]);
+        $pesan = DB::transaction(function () use ($request, $id) {
+            // Lock row agar tidak ada dua request yang mengubah sisa_tagihan bersamaan
+            $piutang = Piutang::whereHas('transaksi', fn($q) => $q->where('user_id', Auth::id()))
+                ->lockForUpdate()
+                ->findOrFail($id);
 
-        $sisaBaru = $piutang->sisa_tagihan - (int)$request->jumlah_bayar;
-        $piutang->update([
-            'sisa_tagihan' => $sisaBaru,
-            'status'       => $sisaBaru <= 0 ? 'lunas' : 'belum_lunas',
-        ]);
+            if ($piutang->status === 'lunas') {
+                throw new \Exception('Piutang ini sudah lunas!');
+            }
 
-        $pesan = $sisaBaru <= 0
-            ? 'Piutang berhasil DILUNASI!'
-            : 'Cicilan berhasil disimpan. Sisa tagihan: Rp ' . number_format($sisaBaru, 0, ',', '.');
+            $jumlah = (int) $request->jumlah_bayar;
+            if ($jumlah > $piutang->sisa_tagihan) {
+                throw new \Exception('Jumlah bayar melebihi sisa tagihan yang tersedia.');
+            }
 
-        return redirect()->route('kasir.piutang.show', $piutang->id)->with('success', $pesan);
+            PembayaranPiutang::create([
+                'piutang_id'    => $piutang->id,
+                'user_id'       => Auth::id(),
+                'jumlah_bayar'  => $jumlah,
+                'tanggal_bayar' => $request->tanggal_bayar,
+            ]);
+
+            $sisaBaru = $piutang->sisa_tagihan - $jumlah;
+            $piutang->update([
+                'sisa_tagihan' => $sisaBaru,
+                'status'       => $sisaBaru <= 0 ? 'lunas' : 'belum_lunas',
+            ]);
+
+            return $sisaBaru <= 0
+                ? 'Piutang berhasil DILUNASI!'
+                : 'Cicilan berhasil disimpan. Sisa tagihan: Rp ' . number_format($sisaBaru, 0, ',', '.');
+        });
+
+        return redirect()->route('kasir.piutang.show', $id)->with('success', $pesan);
     }
 
     /**
@@ -130,11 +147,13 @@ class PiutangKasirController extends Controller
      */
     public function cetakCicilan($id, $cicilanId)
     {
+        // Pastikan cicilan ini milik piutang yang diminta DAN piutang milik kasir ini
         $cicilan = PembayaranPiutang::with([
             'piutang.pelanggan',
             'piutang.transaksi',
             'user',
-        ])->whereHas('piutang.transaksi', fn($q) => $q->where('user_id', Auth::id()))
+        ])->where('piutang_id', $id)
+          ->whereHas('piutang.transaksi', fn($q) => $q->where('user_id', Auth::id()))
           ->findOrFail($cicilanId);
 
         return view('admin.piutang.cetak_cicilan', compact('cicilan'));
